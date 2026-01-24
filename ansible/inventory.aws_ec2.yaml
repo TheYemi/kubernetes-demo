@@ -1,0 +1,13 @@
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1
+filters:
+  tag:Project: k8s-demo
+  instance-state-name: running
+keyed_groups:
+  - key: tags.Role
+    prefix: role
+hostnames:
+  - instance-id
+compose:
+  ansible_host: instance_id

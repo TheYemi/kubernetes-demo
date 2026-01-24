@@ -1,0 +1,24 @@
+---
+- name: Configure all nodes
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Initialize control plane
+  hosts: role_control_plane
+  become: true
+  roles:
+    - control_plane
+
+- name: Join workers
+  hosts: role_worker
+  become: true
+  roles:
+    - worker
+
+- name: Deploy applications
+  hosts: role_control_plane
+  become: true
+  roles:
+    - apps

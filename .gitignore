@@ -1,0 +1,12 @@
+**/.terraform/*
+.terraform.lock.hcl
+
+*.tfstate
+*.tfstate.backup
+
+alertmanager-config.yaml
+alertmanager-secret.yaml
+grafana-secret.yaml
+
+session-manager-plugin.deb
+session-manager-plugin*.deb

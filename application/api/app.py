@@ -1,0 +1,38 @@
+from flask import Flask, jsonify, request
+import redis
+import os
+
+app = Flask(__name__)
+
+redis_host = os.environ.get('REDIS_HOST', 'redis')
+redis_client = redis.Redis(host=redis_host, port=6379, decode_responses=True)
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'healthy'})
+
+@app.route('/tasks', methods=['GET'])
+def get_tasks():
+    tasks = redis_client.lrange('tasks', 0, -1)
+    return jsonify({'tasks': tasks})
+
+@app.route('/tasks', methods=['POST'])
+def add_task():
+    data = request.get_json()
+    task = data.get('task')
+    if task:
+        redis_client.rpush('tasks', task)
+        return jsonify({'message': 'Task added', 'task': task}), 201
+    return jsonify({'error': 'No task provided'}), 400
+
+@app.route('/tasks', methods=['DELETE'])
+def delete_task():
+    data = request.get_json()
+    task = data.get('task')
+    if task:
+        redis_client.lrem('tasks', 1, task)
+        return jsonify({'message': 'Task deleted'})
+    return jsonify({'error': 'No task provided'}), 400
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)

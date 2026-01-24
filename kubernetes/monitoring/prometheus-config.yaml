@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager:9093
+
+    rule_files:
+      - /etc/prometheus/alerts.yml
+
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      - job_name: 'node-exporter'
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_node_labelpresent_node_role_kubernetes_io_control_plane]
+            regex: "true"
+            action: drop
+          - source_labels: [__address__]
+            regex: (.+):(.+)
+            target_label: __address__
+            replacement: ${1}:9100
+
+      - job_name: 'kube-state-metrics'
+        static_configs:
+          - targets: ['kube-state-metrics:8080']
+
+  alerts.yml: |
+    groups:
+      - name: node-alerts
+        rules:
+          - alert: NodeDown
+            expr: up{job="node-exporter"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Node {{ $labels.instance }} is down"
+              description: "Node has been unreachable for more than 1 minute."
+
+          - alert: HighMemoryUsage
+            expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High memory usage on {{ $labels.instance }}"
+              description: "Memory usage is above 80% for more than 2 minutes."
+
+          - alert: HighCPUUsage
+            expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High CPU usage on {{ $labels.instance }}"
+              description: "CPU usage is above 80% for more than 2 minutes."
+
+      - name: pod-alerts
+        rules:
+          - alert: PodCrashLooping
+            expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Pod {{ $labels.pod }} is crash looping"
+              description: "Pod has restarted more than 3 times in 15 minutes."
+
+          - alert: PodNotReady
+            expr: kube_pod_status_phase{phase=~"Pending|Unknown"} > 0
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Pod {{ $labels.pod }} is not ready"
+              description: "Pod has been in {{ $labels.phase }} state for more than 5 minutes."

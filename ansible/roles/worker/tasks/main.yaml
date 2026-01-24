@@ -1,0 +1,22 @@
+---
+- name: Check if already joined
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_conf
+
+- name: Join cluster
+  command: "{{ hostvars['join_command_holder']['join_command'] }}"
+  when: not kubelet_conf.stat.exists
+  retries: 3
+  delay: 30
+  register: join_result
+  until: join_result.rc == 0
+
+- name: Wait for kubelet to be active
+  systemd:
+    name: kubelet
+    state: started
+  register: kubelet_status
+  retries: 5
+  delay: 10
+  until: kubelet_status is succeeded

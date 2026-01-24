@@ -1,0 +1,83 @@
+---
+- name: Check if cluster already initialized
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_init
+
+- name: Initialize cluster
+  command: kubeadm init --pod-network-cidr={{ pod_network_cidr }}
+  when: not kubeadm_init.stat.exists
+  register: init_result
+
+- name: Create .kube directory
+  file:
+    path: /home/ubuntu/.kube
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+
+- name: Copy kubeconfig
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/ubuntu/.kube/config
+    remote_src: true
+    owner: ubuntu
+    group: ubuntu
+    mode: '0600'
+
+- name: Create .kube directory for ssm-user
+  file:
+    path: /home/ssm-user/.kube
+    state: directory
+    owner: ssm-user
+    group: ssm-user
+
+- name: Copy kubeconfig for ssm-user
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/ssm-user/.kube/config
+    remote_src: true
+    owner: ssm-user
+    group: ssm-user
+    mode: '0600'
+    
+- name: Wait for API server to be ready
+  become_user: ubuntu
+  command: kubectl cluster-info
+  register: cluster_info
+  retries: 12
+  delay: 10
+  until: cluster_info.rc == 0
+
+- name: Install Flannel CNI
+  become_user: ubuntu
+  command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+  register: flannel_result
+  retries: 3
+  delay: 10
+  until: flannel_result.rc == 0
+
+- name: Wait for Flannel pods to be ready
+  become_user: ubuntu
+  shell: kubectl get pods -n kube-flannel -o jsonpath='{.items[*].status.phase}' | grep -v Running || true
+  register: flannel_pods
+  retries: 30
+  delay: 10
+  until: flannel_pods.stdout == ""
+
+- name: Wait for control plane node to be Ready
+  become_user: ubuntu
+  shell: kubectl get nodes --no-headers | grep -w Ready
+  register: node_ready
+  retries: 30
+  delay: 10
+  until: node_ready.rc == 0
+
+- name: Generate join command
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+- name: Store join command for workers
+  add_host:
+    name: "join_command_holder"
+    join_command: "{{ join_command.stdout }}"
