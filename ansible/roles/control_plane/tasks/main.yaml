@@ -49,21 +49,38 @@
   delay: 10
   until: cluster_info.rc == 0
 
-- name: Install Flannel CNI
+- name: Download Canal manifest
+  get_url:
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/canal.yaml
+    dest: /home/ubuntu/canal.yaml
+    owner: ubuntu
+    group: ubuntu
+
+- name: Install Canal CNI (Flannel networking + Calico policy)
   become_user: ubuntu
-  command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-  register: flannel_result
+  command: kubectl apply -f /home/ubuntu/canal.yaml
+  register: canal_result
   retries: 3
   delay: 10
-  until: flannel_result.rc == 0
+  until: canal_result.rc == 0
 
-- name: Wait for Flannel pods to be ready
+- name: Wait for Canal pods to be ready
   become_user: ubuntu
-  shell: kubectl get pods -n kube-flannel -o jsonpath='{.items[*].status.phase}' | grep -v Running || true
-  register: flannel_pods
+  shell: |
+    kubectl get pods -n kube-system -l k8s-app=canal -o jsonpath='{.items[*].status.phase}' | grep -v Running || true
+  register: canal_pods
   retries: 30
   delay: 10
-  until: flannel_pods.stdout == ""
+  until: canal_pods.stdout == ""
+
+- name: Wait for Calico controller to be ready
+  become_user: ubuntu
+  shell: |
+    kubectl get pods -n kube-system -l k8s-app=calico-kube-controllers -o jsonpath='{.items[*].status.phase}' | grep -v Running || true
+  register: calico_controller
+  retries: 30
+  delay: 10
+  until: calico_controller.stdout == ""
 
 - name: Wait for control plane node to be Ready
   become_user: ubuntu

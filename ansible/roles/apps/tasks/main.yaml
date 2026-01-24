@@ -41,6 +41,13 @@
     owner: ubuntu
     group: ubuntu
 
+- name: Copy network policy manifests
+  copy:
+    src: "{{ playbook_dir }}/../kubernetes/network-policies/"
+    dest: /home/ubuntu/k8s-manifests/network-policies/
+    owner: ubuntu
+    group: ubuntu
+
 - name: Create data directories on workers for PVs
   delegate_to: "{{ item }}"
   file:
@@ -83,6 +90,14 @@
   retries: 3
   delay: 10
   until: monitoring_apply.rc == 0
+
+- name: Apply network policy manifests
+  become_user: ubuntu
+  command: kubectl apply -f /home/ubuntu/k8s-manifests/network-policies/
+  register: netpol_apply
+  retries: 3
+  delay: 10
+  until: netpol_apply.rc == 0
 
 - name: Wait for app pods to be ready
   become_user: ubuntu
