@@ -5,7 +5,7 @@
     state: directory
     owner: ubuntu
     group: ubuntu
-    
+
 - name: Create argocd namespace
   become_user: ubuntu
   command: kubectl create namespace argocd
@@ -38,6 +38,17 @@
          {"op": "replace", "path": "/spec/ports/0/nodePort", "value": 30443}]'
   register: patch_result
   failed_when: patch_result.rc != 0 and "already patched" not in patch_result.stderr
+
+- name: Disable ArgoCD TLS for HTTP access behind ALB
+  become_user: ubuntu
+  command: >
+    kubectl patch deployment argocd-server -n argocd
+    --type='json'
+    -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--insecure"}]'
+  register: insecure_patch
+  retries: 3
+  delay: 10
+  until: insecure_patch.rc == 0
 
 - name: Get ArgoCD initial admin password
   become_user: ubuntu
