@@ -26,5 +26,5 @@ spec:
           - '--storage.path=/alertmanager'
       volumes:
       - name: config
-        configMap:
-          name: alertmanager-config
+        secret:
+          secretName: alertmanager-config

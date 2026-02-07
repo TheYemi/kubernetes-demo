@@ -17,8 +17,14 @@
   roles:
     - worker
 
-- name: Deploy applications
+- name: Setup cluster prerequisites
   hosts: role_control_plane
   become: true
   roles:
     - apps
+
+- name: Install ArgoCD
+  hosts: role_control_plane
+  become: true
+  roles:
+    - argocd

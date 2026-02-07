@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: production
+data:
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  API_URL: "http://api"
+  APP_ENV: "production"
+  LOG_LEVEL: "info"

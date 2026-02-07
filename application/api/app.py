@@ -5,7 +5,8 @@ import os
 app = Flask(__name__)
 
 redis_host = os.environ.get('REDIS_HOST', 'redis')
-redis_client = redis.Redis(host=redis_host, port=6379, decode_responses=True)
+redis_password = os.environ.get('REDIS_PASSWORD', None)
+redis_client = redis.Redis(host=redis_host, port=6379, password=redis_password, decode_responses=True)
 
 @app.route('/health')
 def health():

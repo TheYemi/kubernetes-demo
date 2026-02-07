@@ -9,45 +9,6 @@
   delay: 10
   until: not_ready_nodes.stdout | trim == "0"
 
-- name: Create directories for manifests
-  file:
-    path: "/home/ubuntu/k8s-manifests/{{ item }}"
-    state: directory
-    owner: ubuntu
-    group: ubuntu
-  loop:
-    - storage
-    - app
-    - monitoring
-
-- name: Copy storage manifests
-  copy:
-    src: "{{ playbook_dir }}/../kubernetes/storage/"
-    dest: /home/ubuntu/k8s-manifests/storage/
-    owner: ubuntu
-    group: ubuntu
-
-- name: Copy app manifests
-  copy:
-    src: "{{ playbook_dir }}/../kubernetes/app/"
-    dest: /home/ubuntu/k8s-manifests/app/
-    owner: ubuntu
-    group: ubuntu
-
-- name: Copy monitoring manifests
-  copy:
-    src: "{{ playbook_dir }}/../kubernetes/monitoring/"
-    dest: /home/ubuntu/k8s-manifests/monitoring/
-    owner: ubuntu
-    group: ubuntu
-
-- name: Copy network policy manifests
-  copy:
-    src: "{{ playbook_dir }}/../kubernetes/network-policies/"
-    dest: /home/ubuntu/k8s-manifests/network-policies/
-    owner: ubuntu
-    group: ubuntu
-
 - name: Create data directories on workers for PVs
   delegate_to: "{{ item }}"
   file:
@@ -61,58 +22,49 @@
     dir: "/data/redis"
   ignore_errors: true
 
-- name: Apply storage manifests
+- name: Install metrics-server
   become_user: ubuntu
-  command: kubectl apply -f /home/ubuntu/k8s-manifests/storage/
-  register: storage_apply
+  command: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+  register: metrics_install
   retries: 3
   delay: 10
-  until: storage_apply.rc == 0
+  until: metrics_install.rc == 0
 
-- name: Apply app manifests
+- name: Patch metrics-server for self-managed cluster
   become_user: ubuntu
-  command: kubectl apply -f /home/ubuntu/k8s-manifests/app/
-  register: app_apply
+  command: >
+    kubectl patch deployment metrics-server -n kube-system
+    --type='json'
+    -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls"}]'
+  register: patch_result
   retries: 3
   delay: 10
-  until: app_apply.rc == 0
+  until: patch_result.rc == 0
 
-- name: Create monitoring namespace
-  become_user: ubuntu
-  command: kubectl create namespace monitoring
-  register: ns_result
-  failed_when: ns_result.rc != 0 and "already exists" not in ns_result.stderr
-
-- name: Apply monitoring manifests
-  become_user: ubuntu
-  command: kubectl apply -f /home/ubuntu/k8s-manifests/monitoring/
-  register: monitoring_apply
-  retries: 3
-  delay: 10
-  until: monitoring_apply.rc == 0
-
-- name: Apply network policy manifests
-  become_user: ubuntu
-  command: kubectl apply -f /home/ubuntu/k8s-manifests/network-policies/
-  register: netpol_apply
-  retries: 3
-  delay: 10
-  until: netpol_apply.rc == 0
-
-- name: Wait for app pods to be ready
+- name: Wait for metrics-server to be ready
   become_user: ubuntu
   shell: |
-    kubectl get pods --no-headers | grep -v "Running\|Completed" | wc -l
-  register: pending_pods
+    kubectl get pods -n kube-system -l k8s-app=metrics-server --no-headers | grep -v "Running" | wc -l
+  register: metrics_pods
   retries: 30
   delay: 10
-  until: pending_pods.stdout | trim == "0"
+  until: metrics_pods.stdout | trim == "0"
 
-- name: Display cluster status
+- name: Install Sealed Secrets controller
   become_user: ubuntu
-  command: kubectl get nodes,pods -A -o wide
-  register: cluster_status
+  command: >
+    kubectl apply -f
+    https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.24.5/controller.yaml
+  register: sealed_install
+  retries: 3
+  delay: 10
+  until: sealed_install.rc == 0
 
-- name: Show cluster status
-  debug:
-    var: cluster_status.stdout_lines
+- name: Wait for Sealed Secrets controller to be ready
+  become_user: ubuntu
+  shell: |
+    kubectl get pods -n kube-system -l name=sealed-secrets-controller --no-headers | grep -v "Running" | wc -l
+  register: sealed_pods
+  retries: 30
+  delay: 10
+  until: sealed_pods.stdout | trim == "0"
