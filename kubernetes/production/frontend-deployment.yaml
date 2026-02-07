@@ -15,7 +15,7 @@ spec:
       serviceAccountName: frontend-sa
       containers:
       - name: frontend
-        image: theyemiii/task-frontend:v2
+        image: theyemiii/task-frontend:87365857da8a69b9ffce183bd7ddbc43c9bd3115
         ports:
         - containerPort: 5000
         envFrom:
