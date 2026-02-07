@@ -15,7 +15,7 @@ spec:
       serviceAccountName: api-sa
       containers:
       - name: api
-        image: theyemiii/task-api:v1
+        image: theyemiii/task-api:v2
         ports:
         - containerPort: 5000
         envFrom:

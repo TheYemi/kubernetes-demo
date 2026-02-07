@@ -1,4 +1,11 @@
 ---
+- name: Create argocd manifests directory
+  file:
+    path: /home/ubuntu/k8s-manifests/argocd
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    
 - name: Create argocd namespace
   become_user: ubuntu
   command: kubectl create namespace argocd
