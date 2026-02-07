@@ -10,7 +10,7 @@ redis_client = redis.Redis(host=redis_host, port=6379, password=redis_password, 
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'healthy', 'version': 'v2'})
+    return jsonify({'status': 'healthy', 'version': 'v2.0'})
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
