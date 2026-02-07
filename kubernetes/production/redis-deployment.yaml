@@ -52,7 +52,7 @@ spec:
             cpu: "100m"
           limits:
             memory: "256Mi"
-            cpu: "250m"
+            cpu: "300m"
         volumeMounts:
         - name: data
           mountPath: /data
