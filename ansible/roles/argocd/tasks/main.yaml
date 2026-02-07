@@ -7,7 +7,7 @@
 
 - name: Install ArgoCD
   become_user: ubuntu
-  command: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  command: kubectl apply -n argocd --server-side=true -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
   register: argocd_install
   retries: 3
   delay: 10
