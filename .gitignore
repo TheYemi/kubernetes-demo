@@ -10,3 +10,5 @@ grafana-secret.yaml
 
 session-manager-plugin.deb
 session-manager-plugin*.deb
+
+kubeseal-*.tar.gz
