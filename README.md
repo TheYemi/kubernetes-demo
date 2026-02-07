@@ -80,11 +80,9 @@ Network Policies enforce strict communication: Frontend can only reach API, API 
 │   ├── monitoring/             # Prometheus, Grafana, Alertmanager stack
 │   ├── network-policies/       # pod-to-pod traffic rules
 │   └── storage/                # StorageClass, PVs, PVCs
-├── application/
-│   ├── api/                    # Flask API + Dockerfile
-│   └── frontend/               # Flask frontend + Dockerfile
-└── docs/
-    └── k8s-setup.md            # manual setup guide
+└──application/
+    ├── api/                    # Flask API + Dockerfile
+    └── frontend/               # Flask frontend + Dockerfile
 ```
 
 ## Deployment
