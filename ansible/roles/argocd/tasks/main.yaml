@@ -58,7 +58,7 @@
 - name: Display ArgoCD credentials
   debug:
     msg: "ArgoCD URL: http://<ALB_DNS>:30443 | Username: admin | Password: {{ argocd_password.stdout }}"
-  
+
 - name: Copy ArgoCD bootstrap manifest
   copy:
     src: "{{ playbook_dir }}/../kubernetes/argocd/bootstrap.yaml"

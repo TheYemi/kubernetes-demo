@@ -79,7 +79,7 @@ Network Policies enforce strict communication: Frontend can only reach API, API 
 │   ├── production/             # app deployments, services, configmaps, secrets, HPAs
 │   ├── monitoring/             # Prometheus, Grafana, Alertmanager stack
 │   ├── network-policies/       # pod-to-pod traffic rules
-│   └── storage/                # StorageClass, PVs, PVCs
+│   └── storage/                # EBS StorageClass, PVCs
 └──application/
     ├── api/                    # Flask API + Dockerfile
     └── frontend/               # Flask frontend + Dockerfile
