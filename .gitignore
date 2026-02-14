@@ -12,3 +12,5 @@ session-manager-plugin.deb
 session-manager-plugin*.deb
 
 kubeseal-*.tar.gz
+*.pem
+kubeseal
