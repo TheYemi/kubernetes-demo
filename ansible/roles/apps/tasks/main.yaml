@@ -9,19 +9,6 @@
   delay: 10
   until: not_ready_nodes.stdout | trim == "0"
 
-- name: Create data directories on workers for PVs
-  delegate_to: "{{ item }}"
-  file:
-    path: "{{ dir }}"
-    state: directory
-    mode: '0777'
-  loop: "{{ groups['role_worker'] }}"
-  loop_control:
-    loop_var: item
-  vars:
-    dir: "/data/redis"
-  ignore_errors: true
-
 - name: Install metrics-server
   become_user: ubuntu
   command: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
@@ -68,3 +55,30 @@
   retries: 30
   delay: 10
   until: sealed_pods.stdout | trim == "0"
+
+- name: Install AWS EBS CSI Driver
+  become_user: ubuntu
+  command: >
+    kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.36"
+  register: ebs_csi_install
+  retries: 3
+  delay: 10
+  until: ebs_csi_install.rc == 0
+
+- name: Wait for EBS CSI Driver controller to be ready
+  become_user: ubuntu
+  shell: |
+    kubectl get pods -n kube-system -l app=ebs-csi-controller --no-headers | grep -v "Running" | wc -l
+  register: ebs_csi_controller
+  retries: 30
+  delay: 10
+  until: ebs_csi_controller.stdout | trim == "0"
+
+- name: Wait for EBS CSI Driver node pods to be ready
+  become_user: ubuntu
+  shell: |
+    kubectl get pods -n kube-system -l app=ebs-csi-node --no-headers | grep -v "Running" | wc -l
+  register: ebs_csi_node
+  retries: 30
+  delay: 10
+  until: ebs_csi_node.stdout | trim == "0"
