@@ -10,7 +10,14 @@ redis_client = redis.Redis(host=redis_host, port=6379, password=redis_password, 
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'healthy', 'version': 'v2.0'})
+    try:
+        # Actually test Redis connection
+        redis_client.ping()
+        return jsonify({'status': 'healthy', 'version': 'v2.0', 'redis': 'connected'}), 200
+    except redis.ConnectionError as e:
+        return jsonify({'status': 'unhealthy', 'version': 'v2.0', 'redis': 'disconnected', 'error': str(e)}), 503
+    except Exception as e:
+        return jsonify({'status': 'unhealthy', 'version': 'v2.0', 'error': str(e)}), 503
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
