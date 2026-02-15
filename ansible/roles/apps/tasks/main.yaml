@@ -82,3 +82,33 @@
   retries: 30
   delay: 10
   until: ebs_csi_node.stdout | trim == "0"
+
+- name: Install NGINX Ingress Controller
+  become_user: ubuntu
+  command: >
+    kubectl apply -f
+    https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.0/deploy/static/provider/baremetal/deploy.yaml
+  register: ingress_install
+  retries: 3
+  delay: 10
+  until: ingress_install.rc == 0
+
+- name: Wait for Ingress Controller to be ready
+  become_user: ubuntu
+  shell: |
+    kubectl get pods -n ingress-nginx -l app.kubernetes.io/component=controller --no-headers | grep -v "Running" | wc -l
+  register: ingress_pods
+  retries: 30
+  delay: 10
+  until: ingress_pods.stdout | trim == "0"
+
+- name: Patch NGINX Ingress to use NodePort 30080
+  become_user: ubuntu
+  command: >
+    kubectl patch svc ingress-nginx-controller -n ingress-nginx
+    --type='json'
+    -p='[{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 30080}]'
+  register: ingress_patch
+  retries: 3
+  delay: 10
+  until: ingress_patch.rc == 0

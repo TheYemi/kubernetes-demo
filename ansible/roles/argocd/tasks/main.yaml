@@ -29,17 +29,7 @@
   delay: 10
   until: argocd_pods.stdout | trim == "0"
 
-- name: Patch ArgoCD server to NodePort
-  become_user: ubuntu
-  command: >
-    kubectl patch svc argocd-server -n argocd
-    --type='json'
-    -p='[{"op": "replace", "path": "/spec/type", "value": "NodePort"},
-         {"op": "replace", "path": "/spec/ports/0/nodePort", "value": 30443}]'
-  register: patch_result
-  failed_when: patch_result.rc != 0 and "already patched" not in patch_result.stderr
-
-- name: Disable ArgoCD TLS for HTTP access behind ALB
+- name: Disable ArgoCD TLS for HTTP access behind NGINX
   become_user: ubuntu
   command: >
     kubectl patch deployment argocd-server -n argocd
@@ -57,7 +47,7 @@
 
 - name: Display ArgoCD credentials
   debug:
-    msg: "ArgoCD URL: http://<ALB_DNS>:30443 | Username: admin | Password: {{ argocd_password.stdout }}"
+    msg: "ArgoCD URL: http://<ALB_DNS>/argocd | Username: admin | Password: {{ argocd_password.stdout }}"
 
 - name: Copy ArgoCD bootstrap manifest
   copy:

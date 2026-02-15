@@ -148,13 +148,13 @@ kubectl get applications -n argocd
 
 ### Access
 
-| Service      | URL                     |
-|--------------|-------------------------|
-| Application  | `http://<ALB-DNS>`      |
-| Grafana      | `http://<ALB-DNS>:3000` |
-| Prometheus   | `http://<ALB-DNS>:9090` |
-| Alertmanager | `http://<ALB-DNS>:9093` |
-| ArgoCD       | `http://<ALB-DNS>:8080` |
+| Service      | URL                             |
+|--------------|---------------------------------|
+| Application  | `http://<ALB-DNS>`              |
+| Grafana      | `http://<ALB-DNS>/grafana`      |
+| Prometheus   | `http://<ALB-DNS>/prometheus`   |
+| Alertmanager | `http://<ALB-DNS>/alertmanager` |
+| ArgoCD       | `http://<ALB-DNS>/argocd`       |
 
 Get the ALB DNS: `terraform output alb_dns_name`
 
