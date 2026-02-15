@@ -52,7 +52,7 @@ spec:
             cpu: "100m"
           limits:
             memory: "256Mi"
-            cpu: "200m"
+            cpu: "250m"
         volumeMounts:
         - name: redis-storage
           mountPath: /data
