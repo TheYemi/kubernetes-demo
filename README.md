@@ -1,6 +1,6 @@
 # Production-Grade Kubernetes Cluster on AWS
 
-A self-managed Kubernetes cluster built with kubeadm on AWS EC2, enhanced from a basic working setup to production-grade standards with GitOps, CI/CD, RBAC, autoscaling, and comprehensive monitoring.
+A self-managed Kubernetes cluster built with kubeadm on AWS EC2, enhanced from a basic working setup to production-grade standards with GitOps, CI/CD, RBAC, autoscaling, comprehensive monitoring, and centralized logging.
 
 ## Architecture
 
@@ -57,6 +57,7 @@ Network Policies enforce strict communication: Frontend can only reach API, API 
 | GitOps           | ArgoCD (app-of-apps pattern)                                         |
 | CI/CD            | GitHub Actions (build, scan, push, deploy)                           |
 | Monitoring       | Prometheus, Alertmanager, Grafana, node-exporter, kube-state-metrics |
+| Logging          | Fluent Bit, Loki                                                     |
 | Storage          | AWS EBS CSI Driver, gp3 StorageClass                                 |
 | Security         | Network Policies, RBAC, Sealed Secrets, Trivy image scanning         |
 | Autoscaling      | HPA with metrics-server                                              |
@@ -98,10 +99,10 @@ Network Policies enforce strict communication: Frontend can only reach API, API 
 │   │       ├── monitoring.yaml
 │   │       ├── network-policies.yaml
 │   │       └── ingress.yaml
-│   ├── namespaces/                   # production, staging, monitoring
+│   ├── namespaces/                   # production, staging, monitoring, ingress-nginx
 │   ├── production/                   # App deployments, services, HPAs, sealed secrets
-│   ├── monitoring/                   # Prometheus, Grafana, Alertmanager stack
-│   ├── network-policies/             # Pod-to-pod traffic rules
+│   ├── monitoring/                   # Prometheus, Grafana, Alertmanager, Loki, Fluent Bit
+│   ├── network-policies/             # Pod-to-pod traffic rules (production + monitoring)
 │   ├── ingress/                      # NGINX Ingress routing rules
 │   ├── storage/                      # EBS StorageClass, PVCs
 │   └── secrets/                      # Secret example templates (.example files)
@@ -197,7 +198,7 @@ terraform destroy
 ## Ingress
 An NGINX Ingress controller handles all external routing through a single NodePort (30080). The ALB forwards all traffic to this one port, and NGINX routes requests to the correct ClusterIP service based on the URL path.
 This replaces the previous setup where each service needed its own NodePort, ALB target group, and listener. Adding a new service now only requires an Ingress YAML manifest, no Terraform changes needed.
-Services that run under a subpath are configured to be aware of their prefix: Grafana uses GF_SERVER_SERVE_FROM_SUB_PATH, Prometheus and Alertmanager use --web.external-url, and ArgoCD uses NGINX rewrite rules to strip the /argocd prefix.
+Services that run under a subpath are configured to be aware of their prefix: Grafana uses GF_SERVER_SERVE_FROM_SUB_PATH, Prometheus and Alertmanager use --web.external-url, and ArgoCD uses --rootpath.
 
 ## CI/CD Pipeline
 The GitHub Actions pipeline triggers on pushes to `application/` on the `main` branch.
@@ -216,8 +217,8 @@ ArgoCD uses the app-of-apps pattern. A single bootstrap Application watches `kub
 - `namespaces` — cluster namespace definitions
 - `storage` — StorageClass, PVs, PVCs
 - `production` — application deployments, services, configs, HPAs
-- `monitoring` — Prometheus, Grafana, Alertmanager stack
-- `network-policies` — pod-to-pod traffic rules
+- `monitoring` — Prometheus, Grafana, Alertmanager, Loki, Fluent Bit
+- `network-policies` — pod-to-pod traffic rules for production and monitoring
 - `ingress` — NGINX Ingress routing rules
 
 All Applications use auto-sync with self-heal and pruning enabled. Changes pushed to Git are automatically applied. Manual cluster changes are reverted.
@@ -236,8 +237,17 @@ Alerts route to Slack via Alertmanager.
 
 Note: Prometheus is configured to only scrape worker node-exporters, excluding the control plane via relabel config.
 
+## Logging
+**Stack:** Fluent Bit collects logs from every node and ships them to Loki. Grafana queries Loki for log exploration.
+
+Fluent Bit runs as a DaemonSet — one pod per node. It tails container log files from /var/log/containers/, enriches each line with Kubernetes metadata (pod name, namespace, container name) via the Kubernetes API, and forwards everything to Loki over HTTP.
+
+Loki stores logs with label-based indexing rather than full-text indexing, keeping resource usage low. It retains logs for 48 hours with automatic cleanup via the compactor. Grafana connects to Loki as a provisioned data source, allowing log queries using LogQL alongside Prometheus metrics in the same UI.
+
 ## Security
-- **Network Policies:** Pod-to-pod traffic restricted by Canal (Calico policy enforcement)
+- **Network Policies:** Pod-to-pod traffic restricted by Canal (Calico policy enforcement) across both production and monitoring namespaces. 
+- Production: Frontend can only reach API, API can only reach Redis, Redis only accepts from API. 
+- Monitoring: each component restricted to only its required communication paths (Prometheus → scrape targets, Fluent Bit → Loki, Grafana → Prometheus/Loki, Alertmanager → Slack).
 - **RBAC:** Dedicated ServiceAccounts per application component (some with default no permissions because there was no need for it)
 - **Sealed Secrets:** Secrets are encrypted with the cluster's public certificate and stored in Git. Only the controller's private key can decrypt them. Example templates in kubernetes/secrets/.
 - **Image scanning:** Trivy scans every image build for CRITICAL vulnerabilities before push. Builds fail if vulnerabilities are found.
@@ -251,6 +261,7 @@ Persistent storage uses the AWS EBS CSI driver with a gp3 StorageClass. Volumes 
 ### Persistent volumes:
 Redis (2Gi) — append-only data persistence
 Grafana (2Gi) — dashboard and data source storage
+Loki (5Gi) — centralized log storage with 48-hour retention
 
 ## Autoscaling
 HPA configured for frontend and API deployments:
