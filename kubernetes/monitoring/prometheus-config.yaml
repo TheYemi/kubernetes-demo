@@ -14,6 +14,7 @@ data:
         - static_configs:
             - targets:
               - alertmanager:9093
+          path_prefix: /alertmanager
 
     rule_files:
       - /etc/prometheus/alerts.yml
