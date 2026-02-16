@@ -19,7 +19,7 @@ spec:
         volumeMounts:
         - name: varlog
           mountPath: /var/log
-          readOnly: true
+          readOnly: false
         - name: config
           mountPath: /fluent-bit/etc
         resources:
