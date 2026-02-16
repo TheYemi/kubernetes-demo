@@ -24,7 +24,7 @@ spec:
         args:
           - '--config.file=/etc/alertmanager/alertmanager.yml'
           - '--storage.path=/alertmanager'
-          - '--web.external-url=/alertmanager/'
+          - '--web.external-url=http://localhost/alertmanager/'
       volumes:
       - name: config
         secret:
