@@ -16,6 +16,11 @@ spec:
       containers:
       - name: frontend
         image: theyemiii/task-frontend:50d917d662a0f13002fa142969627c4ca1296d32
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         ports:
         - containerPort: 5000
         envFrom:

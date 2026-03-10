@@ -16,10 +16,20 @@ spec:
       containers:
       - name: fluent-bit
         image: fluent/fluent-bit:3.2
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
         volumeMounts:
         - name: varlog
           mountPath: /var/log
-          readOnly: false
+          readOnly: true
+        - name: varpodlogs
+          mountPath: /var/log/pods
+          readOnly: true
         - name: config
           mountPath: /fluent-bit/etc
         resources:
@@ -32,7 +42,10 @@ spec:
       volumes:
       - name: varlog
         hostPath:
-          path: /var/log
+          path: /var/log/containers
+      - name: varpodlogs
+        hostPath:
+          path: /var/log/pods
       - name: config
         configMap:
           name: fluent-bit-config

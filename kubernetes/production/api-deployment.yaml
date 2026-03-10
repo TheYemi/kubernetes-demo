@@ -16,6 +16,11 @@ spec:
       containers:
       - name: api
         image: theyemiii/task-api:2c038f76a54034117419e19fba3b9ce271bb6536
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         ports:
         - containerPort: 5000
         envFrom:

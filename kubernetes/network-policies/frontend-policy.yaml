@@ -11,6 +11,10 @@ spec:
     - Ingress
     - Egress
   ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
     - ports:
         - protocol: TCP
           port: 5000
