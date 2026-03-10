@@ -15,7 +15,7 @@ spec:
       serviceAccountName: frontend-sa
       containers:
       - name: frontend
-        image: theyemiii/task-frontend:50d917d662a0f13002fa142969627c4ca1296d32
+        image: theyemiii/task-frontend:b869e2b37aa4bcb3e6925b3976a52c487757f37a
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
