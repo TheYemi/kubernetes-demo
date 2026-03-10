@@ -15,7 +15,7 @@ spec:
       serviceAccountName: api-sa
       containers:
       - name: api
-        image: theyemiii/task-api:2c038f76a54034117419e19fba3b9ce271bb6536
+        image: theyemiii/task-api:ad5506ea5a1b003cc342c4f0877fdfdc2cf68990
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
