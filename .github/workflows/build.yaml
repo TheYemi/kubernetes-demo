@@ -60,19 +60,6 @@ jobs:
           docker push theyemiii/task-api:${{ github.sha }}
           docker push theyemiii/task-api:latest
 
-      - name: Update API deployment manifest
-        run: |
-          sed -i "s|image: theyemiii/task-api:.*|image: theyemiii/task-api:${{ github.sha }}|" \
-            kubernetes/production/api-deployment.yaml
-
-      - name: Commit and push manifest change
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add kubernetes/production/api-deployment.yaml
-          git commit -m "ci: update api image to ${{ github.sha }}"
-          git push
-
   build-frontend:
     permissions:
       contents: write
@@ -107,15 +94,33 @@ jobs:
           docker push theyemiii/task-frontend:${{ github.sha }}
           docker push theyemiii/task-frontend:latest
 
-      - name: Update frontend deployment manifest
-        run: |
-          sed -i "s|image: theyemiii/task-frontend:.*|image: theyemiii/task-frontend:${{ github.sha }}|" \
-            kubernetes/production/frontend-deployment.yaml
+  update-manifests:
+    runs-on: ubuntu-latest
+    needs: [build-api, build-frontend]
+    if: always() && (needs.build-api.result == 'success' || needs.build-frontend.result == 'success')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
-      - name: Commit and push manifest change
+      - name: Update manifests
+        run: |
+          if [ "${{ needs.build-api.result }}" == "success" ]; then
+            sed -i "s|image: theyemiii/task-api:.*|image: theyemiii/task-api:${{ github.sha }}|" \
+              kubernetes/production/api-deployment.yaml
+          fi
+          if [ "${{ needs.build-frontend.result }}" == "success" ]; then
+            sed -i "s|image: theyemiii/task-frontend:.*|image: theyemiii/task-frontend:${{ github.sha }}|" \
+              kubernetes/production/frontend-deployment.yaml
+          fi
+
+      - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add kubernetes/production/frontend-deployment.yaml
-          git commit -m "ci: update frontend image to ${{ github.sha }}"
+          git add kubernetes/production/
+          git commit -m "ci: update images to ${{ github.sha }}" || exit 0
           git push
