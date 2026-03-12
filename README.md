@@ -279,3 +279,6 @@ Running costs approximately $0.17/hour:
 - ALB
 
 NAT Gateway and ALB charge even when instances are stopped. Use `terraform destroy` when not in use.
+
+## Future Enhancements
+- Adding TLS at ALB 

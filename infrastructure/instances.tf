@@ -23,6 +23,7 @@ resource "aws_instance" "control-plane" {
   root_block_device {
     volume_size = 20
     volume_type = "gp3"
+    encrypted   = true
   }
 
   tags = {
@@ -36,7 +37,7 @@ resource "aws_instance" "worker" {
   count                  = 2
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = aws_subnet.private[0].id
+  subnet_id              = aws_subnet.private[count.index].id
   vpc_security_group_ids = [aws_security_group.k8s_nodes.id]
   iam_instance_profile   = aws_iam_instance_profile.k8s_node_profile.name
   
