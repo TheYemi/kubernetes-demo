@@ -28,7 +28,7 @@ jobs:
 
   build-api:
     permissions:
-      contents: write
+      contents: read
     runs-on: ubuntu-latest
     needs: detect-changes
     if: needs.detect-changes.outputs.api == 'true'
@@ -62,7 +62,7 @@ jobs:
 
   build-frontend:
     permissions:
-      contents: write
+      contents: read
     runs-on: ubuntu-latest
     needs: detect-changes
     if: needs.detect-changes.outputs.frontend == 'true'
