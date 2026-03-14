@@ -15,7 +15,7 @@ spec:
         - namespaceSelector:
             matchLabels:
               name: ingress-nginx
-    - ports:
+      ports:
         - protocol: TCP
           port: 5000
     - from:
