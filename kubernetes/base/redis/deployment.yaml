@@ -26,6 +26,8 @@ spec:
       - name: redis
         image: redis:7-alpine
         securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
           allowPrivilegeEscalation: false
           capabilities:
             drop:
