@@ -15,7 +15,6 @@ spec:
       securityContext:
         fsGroup: 999
       serviceAccountName: redis-sa
-      serviceAccountName: redis-sa
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
