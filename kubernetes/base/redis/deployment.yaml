@@ -27,6 +27,11 @@ spec:
         image: redis:7-alpine
         securityContext:
           allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
         ports:
         - containerPort: 6379
         args: ["--appendonly", "yes", "--requirepass", "$(REDIS_PASSWORD)"]
