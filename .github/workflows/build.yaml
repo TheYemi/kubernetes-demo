@@ -106,21 +106,20 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Update manifests
+      - name: Update dev overlay images
         run: |
+          cd kubernetes/overlays/dev
           if [ "${{ needs.build-api.result }}" == "success" ]; then
-            sed -i "s|image: theyemiii/task-api:.*|image: theyemiii/task-api:${{ github.sha }}|" \
-              kubernetes/production/api-deployment.yaml
+            kustomize edit set image theyemiii/task-api=theyemiii/task-api:${{ github.sha }}
           fi
           if [ "${{ needs.build-frontend.result }}" == "success" ]; then
-            sed -i "s|image: theyemiii/task-frontend:.*|image: theyemiii/task-frontend:${{ github.sha }}|" \
-              kubernetes/production/frontend-deployment.yaml
+            kustomize edit set image theyemiii/task-frontend=theyemiii/task-frontend:${{ github.sha }}
           fi
-
+          
       - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add kubernetes/production/
-          git commit -m "ci: update images to ${{ github.sha }}" || exit 0
+          git add kubernetes/overlays/dev/kustomization.yaml
+          git commit -m "ci: update dev images to ${{ github.sha }}" || exit 0
           git push

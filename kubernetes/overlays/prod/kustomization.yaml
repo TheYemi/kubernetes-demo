@@ -1,0 +1,88 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: prod
+
+resources:
+  - namespace.yaml
+  - ../../base/common
+  - ../../base/api
+  - ../../base/frontend
+  - ../../base/redis
+  - ../../base/network-policies
+
+commonLabels:
+  environment: prod
+
+patches:
+  # API customizations
+  - target:
+      kind: Deployment
+      name: api
+    patch: |-
+      - op: add
+        path: /spec/replicas
+        value: 3
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+  
+  # Frontend customizations
+  - target:
+      kind: Deployment
+      name: frontend
+    patch: |-
+      - op: add
+        path: /spec/replicas
+        value: 3
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+  
+  # API HPA
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: api-hpa
+    patch: |-
+      - op: add
+        path: /spec/minReplicas
+        value: 3
+      - op: add
+        path: /spec/maxReplicas
+        value: 6
+  
+  # Frontend HPA
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: frontend-hpa
+    patch: |-
+      - op: add
+        path: /spec/minReplicas
+        value: 3
+      - op: add
+        path: /spec/maxReplicas
+        value: 6
+  
+  # ConfigMap
+  - target:
+      kind: ConfigMap
+      name: app-config
+    patch: |-
+      - op: replace
+        path: /data/APP_ENV
+        value: "production"
+      - op: replace
+        path: /data/LOG_LEVEL
+        value: "info"
