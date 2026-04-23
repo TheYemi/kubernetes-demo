@@ -11,7 +11,7 @@ spec:
     path: kubernetes/network-policies
   destination:
     server: https://kubernetes.default.svc
-    namespace: production
+    namespace: default
   syncPolicy:
     automated:
       prune: true
