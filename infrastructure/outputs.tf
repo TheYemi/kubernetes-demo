@@ -28,10 +28,10 @@ output "ansible_ssm_bucket" {
 }
 
 resource "local_file" "ansible_vars" {
-  content = yamlencode({
-    ansible_aws_ssm_bucket_name = aws_s3_bucket.ansible_ssm.id
-    pod_network_cidr            = "10.244.0.0/16"
-    kubernetes_version          = "1.29"
-  })
+  content = <<-EOT
+ansible_aws_ssm_bucket_name: ${aws_s3_bucket.ansible_ssm.id}
+pod_network_cidr: "10.244.0.0/16"
+kubernetes_version: "1.29"
+EOT
   filename = "${path.module}/../ansible/group_vars/all/terraform_vars.yaml"
 }
