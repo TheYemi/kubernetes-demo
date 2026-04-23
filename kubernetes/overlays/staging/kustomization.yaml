@@ -10,6 +10,7 @@ resources:
   - ../../base/frontend
   - ../../base/redis
   - ../../base/network-policies
+  - app-sealed-secret.yaml
 
 commonLabels:
   environment: staging
