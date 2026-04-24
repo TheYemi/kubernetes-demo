@@ -1,13 +1,19 @@
 import pytest
-from app import app
+from app import app as flask_app
 import json
 
 
 @pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
+def app():
+    flask_app.config.update({
+        'TESTING': True,
+    })
+    yield flask_app
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
 
 
 def test_index_page_loads(client, mocker):
