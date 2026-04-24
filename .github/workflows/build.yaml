@@ -10,6 +10,21 @@ permissions:
   contents: read
 
 jobs:
+  sast-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Semgrep SAST
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/python
+            
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
