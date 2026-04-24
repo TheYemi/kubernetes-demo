@@ -1,32 +1,430 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
-        h1 { color: #333; }
-        .task { padding: 10px; margin: 5px 0; background: #f0f0f0; display: flex; justify-content: space-between; }
-        form { margin: 20px 0; }
-        input[type="text"] { padding: 10px; width: 70%; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-        .delete-btn { background: #dc3545; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F5F5F5;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #000;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 10px;
+            letter-spacing: -3px;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: #666;
+            font-weight: 400;
+            letter-spacing: -0.3px;
+        }
+
+        .add-task-card {
+            background: #FFF;
+            border: 3px solid #000;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            background: #FAFAFA;
+            outline: none;
+            transition: all 0.2s;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #000;
+            background: #FFF;
+        }
+
+        input[type="text"]::placeholder {
+            color: #999;
+        }
+
+        .priority-select {
+            padding: 16px 20px;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            background: #FAFAFA;
+            cursor: pointer;
+            outline: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-width: 160px;
+            letter-spacing: -0.3px;
+        }
+
+        .priority-select:focus {
+            border-color: #000;
+            background: #FFF;
+        }
+
+        .btn-add {
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            border: none;
+            background: #000;
+            color: #FFF;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .task-count {
+            background: #000;
+            color: #FFF;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: -0.3px;
+        }
+
+        .tasks-list {
+            background: #FFF;
+            border: 3px solid #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 24px 28px;
+            border-bottom: 2px solid #F0F0F0;
+            transition: all 0.2s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item:hover {
+            background: #FAFAFA;
+        }
+
+        .task-checkbox {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #D0D0D0;
+            border-radius: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.2s;
+            background: #FFF;
+        }
+
+        .task-checkbox:hover {
+            border-color: #000;
+        }
+
+        .task-checkbox.checked {
+            background: #7FD8BE;
+            border-color: #7FD8BE;
+        }
+
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .task-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .task-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #000;
+            transition: all 0.3s;
+            flex: 1;
+            letter-spacing: -0.3px;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .priority-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0px;
+            white-space: nowrap;
+        }
+
+        .priority-pill.high {
+            background: #FFD6D6;
+            color: #C53030;
+            border: 2px solid #C53030;
+        }
+
+        .priority-pill.medium {
+            background: #FFF4CC;
+            color: #C17900;
+            border: 2px solid #C17900;
+        }
+
+        .priority-pill.low {
+            background: #D6F5E8;
+            color: #2F855A;
+            border: 2px solid #2F855A;
+        }
+
+        .btn-delete {
+            padding: 10px 20px;
+            border: 2px solid #E0E0E0;
+            background: #FFF;
+            color: #666;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+        }
+
+        .btn-delete:hover {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+            background: #FFF5F5;
+        }
+
+        .empty-state {
+            padding: 80px 40px;
+            text-align: center;
+            background: #FFF;
+            border: 3px solid #000;
+            border-radius: 16px;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .empty-text {
+            font-size: 1rem;
+            color: #666;
+            letter-spacing: -0.3px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+                letter-spacing: -2px;
+            }
+
+            .add-form {
+                flex-direction: column;
+            }
+
+            .input-wrapper,
+            .priority-select,
+            .btn-add {
+                width: 100%;
+            }
+
+            .task-item {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .task-content {
+                flex-basis: 100%;
+                order: 2;
+            }
+
+            .btn-delete {
+                order: 3;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Task Tracker v2</h1>
-    <form method="POST" action="/add">
-        <input type="text" name="task" placeholder="Enter a task" required>
-        <button type="submit">Add Task</button>
-    </form>
-    <h2>Tasks:</h2>
-    {% for task in tasks %}
-    <div class="task">
-        <span>{{ task }}</span>
-        <form method="POST" action="/delete" style="display:inline;">
-            <input type="hidden" name="task" value="{{ task }}">
-            <button type="submit" class="delete-btn">Delete</button>
-        </form>
+    <div class="container">
+        <div class="header">
+            <h1>Task Tracker</h1>
+            <p class="subtitle">Manage your daily tasks efficiently</p>
+        </div>
+
+        <div class="add-task-card">
+            <form method="POST" action="/add" class="add-form">
+                <div class="input-wrapper">
+                    <input type="text" name="task" placeholder="Type to add a new task..." required autocomplete="off">
+                </div>
+                <select name="priority" class="priority-select">
+                    <option value="low">Low priority</option>
+                    <option value="medium" selected>Medium priority</option>
+                    <option value="high">High priority</option>
+                </select>
+                <button type="submit" class="btn-add">Add task</button>
+            </form>
+        </div>
+
+        <div class="tasks-header">
+            <h2>All Tasks</h2>
+            <div class="task-count">{{ tasks|length }} {% if tasks|length == 1 %}task{% else %}tasks{% endif %}</div>
+        </div>
+
+        {% if tasks %}
+            <div class="tasks-list">
+                {% for task in tasks %}
+                <div class="task-item">
+                    <div class="task-checkbox" onclick="toggleComplete(this)"></div>
+                    <div class="task-content">
+                        <span class="task-text">{{ task.text }}</span>
+                        <span class="priority-pill {{ task.priority }}">{{ task.priority }}</span>
+                    </div>
+                    <form method="POST" action="/delete" style="margin: 0;">
+                        <input type="hidden" name="task" value="{{ task.text }}">
+                        <input type="hidden" name="priority" value="{{ task.priority }}">
+                        <button type="submit" class="btn-delete">Delete</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <div class="empty-title">No tasks yet</div>
+                <p class="empty-text">Add your first task above to get started</p>
+            </div>
+        {% endif %}
     </div>
-    {% endfor %}
+
+    <script>
+        function toggleComplete(checkbox) {
+            checkbox.classList.toggle('checked');
+            const taskText = checkbox.parentElement.querySelector('.task-text');
+            if (taskText) {
+                taskText.classList.toggle('completed');
+            }
+        }
+
+        // Staggered animation for tasks
+        document.addEventListener('DOMContentLoaded', () => {
+            const tasks = document.querySelectorAll('.task-item');
+            tasks.forEach((task, index) => {
+                task.style.animationDelay = `${index * 0.05}s`;
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+# Local development only - NOT used in production
+# Run with: docker compose -f docker-compose.dev.yaml up --build
+
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass devpassword
+    ports:
+      - "6379:6379"
+  
+  api:
+    build: ./application/api
+    ports:
+      - "5001:5000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=devpassword
+    depends_on:
+      - redis
+  
+  frontend:
+    build: ./application/frontend
+    ports:
+      - "5000:5000"
+    environment:
+      - API_URL=http://api:5000
+    depends_on:
+      - api
