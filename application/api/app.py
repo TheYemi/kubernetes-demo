@@ -11,7 +11,6 @@ redis_client = redis.Redis(host=redis_host, port=6379, password=redis_password, 
 @app.route('/health')
 def health():
     try:
-        # Actually test Redis connection
         redis_client.ping()
         return jsonify({'status': 'healthy', 'version': 'v2.0', 'redis': 'connected'}), 200
     except redis.ConnectionError as e:
