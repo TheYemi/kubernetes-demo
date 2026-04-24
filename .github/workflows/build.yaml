@@ -24,9 +24,39 @@ jobs:
           config: >-
             p/security-audit
             p/python
-            
+
+  test-and-coverage:
+    runs-on: ubuntu-latest
+    needs: sast-scan
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Test API
+        run: |
+          cd application/api
+          pip install -r requirements.txt
+          pytest --cov=app --cov-report=term --cov-report=xml --cov-fail-under=80
+      
+      - name: Test Frontend
+        run: |
+          cd application/frontend
+          pip install -r requirements.txt
+          pytest --cov=app --cov-report=term --cov-report=xml --cov-fail-under=80
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./application/api/coverage.xml,./application/frontend/coverage.xml
+          fail_ci_if_error: false
+
   detect-changes:
     runs-on: ubuntu-latest
+    needs: test-and-coverage
     outputs:
       api: ${{ steps.filter.outputs.api }}
       frontend: ${{ steps.filter.outputs.frontend }}
