@@ -90,4 +90,7 @@ patches:
 images:
 - name: theyemiii/task-api
   newName: theyemiii/task-api
-  newTag: f55142c1d574cb262c5e04dcd9152d8361f806b7
+  newTag: 58353ece2ac9391a0cf50c882634bc25e45b77dc
+- name: theyemiii/task-frontend
+  newName: theyemiii/task-frontend
+  newTag: 58353ece2ac9391a0cf50c882634bc25e45b77dc
