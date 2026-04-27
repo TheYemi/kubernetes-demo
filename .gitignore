@@ -16,3 +16,4 @@ kubeseal-*.tar.gz
 *.pem
 kubeseal
 **/venv
+sealed-secrets-master.key
