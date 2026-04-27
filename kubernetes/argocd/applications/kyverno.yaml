@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/theyemii/k8s-project.git
+    repoURL: https://github.com/TheYemi/kubernetes-demo
     targetRevision: main
     path: kubernetes/kyverno
   destination:
