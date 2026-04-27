@@ -2,14 +2,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: prod
-  annotations:
-    config.linkerd.io/proxy-cpu-limit: "200m"
-    config.linkerd.io/proxy-cpu-request: "100m"
-    config.linkerd.io/proxy-memory-limit: "256Mi"
-    config.linkerd.io/proxy-memory-request: "128Mi"
   labels:
     name: prod
     environment: prod
-    pod-security.kubernetes.io/enforce: privileged 
+    pod-security.kubernetes.io/enforce: baseline
     pod-security.kubernetes.io/audit: restricted
     pod-security.kubernetes.io/warn: restricted
