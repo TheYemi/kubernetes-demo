@@ -1,16 +1,5 @@
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: fluent-bit
-  namespace: monitoring
 spec:
-  selector:
-    matchLabels:
-      app: fluent-bit
   template:
-    metadata:
-      labels:
-        app: fluent-bit
     spec:
       serviceAccountName: fluent-bit
       containers:
@@ -21,6 +10,9 @@ spec:
           capabilities:
             drop:
               - ALL
+            add:
+              - CHOWN        
+              - DAC_OVERRIDE 
           readOnlyRootFilesystem: false
         volumeMounts:
         - name: varlog
@@ -38,13 +30,3 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "200m"
-      volumes:
-      - name: varlog
-        hostPath:
-          path: /var/log/containers
-      - name: varpodlogs
-        hostPath:
-          path: /var/log/pods
-      - name: config
-        configMap:
-          name: fluent-bit-config
