@@ -16,3 +16,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
+  ignoreDifferences:
+  - group: ""
+    kind: Namespace
+    jsonPointers:
+    - /metadata/labels/kubernetes.io~1metadata.name
