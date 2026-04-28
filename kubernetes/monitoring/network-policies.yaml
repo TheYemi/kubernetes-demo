@@ -58,7 +58,8 @@ spec:
         - protocol: UDP
           port: 53
     - to:
-        - namespaceSelector: {}
+        - ipBlock:
+            cidr: 0.0.0.0/0  
       ports:
         - protocol: TCP
           port: 443
@@ -191,7 +192,6 @@ spec:
           port: 53
 ---
 # Fluent Bit: allow outbound to Loki, Kubernetes API, and DNS
-# Fluent Bit: allow outbound to Loki, Kubernetes API, and DNS
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -278,13 +278,7 @@ spec:
           port: 53
     - to:
         - ipBlock:
-            cidr: 10.96.0.0/12  
-      ports:
-        - protocol: TCP
-          port: 443
-    - to:
-        - ipBlock:
-            cidr: 10.0.0.0/16   
+            cidr: 0.0.0.0/0  
       ports:
         - protocol: TCP
           port: 443
