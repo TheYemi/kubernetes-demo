@@ -44,6 +44,10 @@ spec:
           mountPath: /var/lib/grafana
         - name: datasources
           mountPath: /etc/grafana/provisioning/datasources
+        - name: dashboards-provisioning    
+          mountPath: /etc/grafana/provisioning/dashboards
+        - name: slo-dashboard              
+          mountPath: /var/lib/grafana/dashboards
       volumes:
       - name: grafana-storage
         persistentVolumeClaim:
@@ -51,3 +55,9 @@ spec:
       - name: datasources
         configMap:
           name: grafana-datasources
+      - name: dashboards-provisioning     
+        configMap:
+          name: grafana-dashboards-config
+      - name: slo-dashboard               
+        configMap:
+          name: grafana-slo-dashboard

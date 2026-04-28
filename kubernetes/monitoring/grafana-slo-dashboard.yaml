@@ -1,0 +1,162 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-slo-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  slo-dashboard.json: |
+    {
+      "dashboard": {
+        "title": "API SLO Dashboard",
+        "tags": ["slo", "sre", "error-budget"],
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Error Budget Remaining",
+            "type": "gauge",
+            "targets": [
+              {
+                "expr": "job:slo_error_budget:ratio * 100",
+                "legendFormat": "Budget %"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+            "options": {
+              "showThresholdLabels": false,
+              "showThresholdMarkers": true
+            },
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "min": -100,
+                "max": 100,
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"value": -100, "color": "red"},
+                    {"value": 0, "color": "yellow"},
+                    {"value": 50, "color": "green"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 2,
+            "title": "Current Burn Rate (1h)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "job:slo_burn_rate:ratio_rate1h",
+                "legendFormat": "Burn Rate"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+            "fieldConfig": {
+              "defaults": {
+                "unit": "none",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"value": 0, "color": "green"},
+                    {"value": 3, "color": "yellow"},
+                    {"value": 6, "color": "orange"},
+                    {"value": 14.4, "color": "red"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 3,
+            "title": "SLO Compliance (30d)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "(1 - job:slo_errors:ratio_rate30d) * 100",
+                "legendFormat": "Availability %"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "decimals": 3,
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"value": 0, "color": "red"},
+                    {"value": 99, "color": "green"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 4,
+            "title": "Burn Rate Over Time",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "job:slo_burn_rate:ratio_rate1h",
+                "legendFormat": "1h window"
+              },
+              {
+                "expr": "job:slo_burn_rate:ratio_rate6h",
+                "legendFormat": "6h window"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+            "fieldConfig": {
+              "defaults": {
+                "custom": {
+                  "lineWidth": 2
+                }
+              },
+              "overrides": [
+                {
+                  "matcher": {"id": "byName", "options": "1h window"},
+                  "properties": [
+                    {"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}}
+                  ]
+                },
+                {
+                  "matcher": {"id": "byName", "options": "6h window"},
+                  "properties": [
+                    {"id": "color", "value": {"mode": "fixed", "fixedColor": "green"}}
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "title": "Error Rate vs SLO Target",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "job:slo_errors:ratio_rate1h * 100",
+                "legendFormat": "Actual Error Rate"
+              },
+              {
+                "expr": "1",
+                "legendFormat": "SLO Threshold (1%)"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent"
+              }
+            }
+          }
+        ],
+        "refresh": "30s",
+        "schemaVersion": 36,
+        "version": 1
+      },
+      "overwrite": true
+    }
