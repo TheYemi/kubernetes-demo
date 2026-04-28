@@ -221,7 +221,7 @@ spec:
         - protocol: UDP
           port: 53
   
-      ports:
+    - ports:
         - protocol: TCP
           port: 443
 ---
@@ -277,6 +277,6 @@ spec:
         - protocol: UDP
           port: 53
 
-      ports:
+    - ports:
         - protocol: TCP
           port: 443
