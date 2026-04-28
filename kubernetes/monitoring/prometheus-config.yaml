@@ -18,6 +18,8 @@ data:
 
     rule_files:
       - /etc/prometheus/alerts.yml
+      - /etc/prometheus/slo-rules.yml      
+      - /etc/prometheus/slo-alerts.yml
 
     scrape_configs:
       - job_name: 'prometheus'
@@ -39,6 +41,48 @@ data:
       - job_name: 'kube-state-metrics'
         static_configs:
           - targets: ['kube-state-metrics:8080']
+
+      - job_name: 'api'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - dev
+                - staging
+                - prod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: api
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__address__]
+            target_label: __address__
+            regex: (.+):(.+)
+            replacement: ${1}:5000
+        
+      - job_name: 'frontend'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - dev
+                - staging
+                - prod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: frontend
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__address__]
+            target_label: __address__
+            regex: (.+):(.+)
+            replacement: ${1}:5000
 
   alerts.yml: |
     groups:

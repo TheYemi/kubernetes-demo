@@ -23,9 +23,21 @@ spec:
         ports:
         - containerPort: 9090
         volumeMounts:
-        - name: config
+        - name: prometheus-config
           mountPath: /etc/prometheus
+        - name: slo-rules              
+          mountPath: /etc/prometheus/slo-rules.yml
+          subPath: slo-rules.yml
+        - name: slo-alerts            
+          mountPath: /etc/prometheus/slo-alerts.yml
+          subPath: slo-alerts.yml
       volumes:
-      - name: config
+      - name: prometheus-config
         configMap:
           name: prometheus-config
+      - name: slo-rules
+        configMap:
+          name: prometheus-slo-rules
+      - name: slo-alerts
+        configMap:
+          name: prometheus-slo-alerts

@@ -1,0 +1,142 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-slo-alerts
+  namespace: monitoring
+data:
+  slo-alerts.yml: |
+    groups:
+    - name: slo_alerts
+      interval: 30s
+      rules:
+      
+      # CRITICAL: 14.4x burn rate (2-day exhaustion)
+      # Wake up on-call immediately
+      - alert: ErrorBudgetBurnCritical
+        expr: |
+          (
+            job:slo_burn_rate:ratio_rate1h > 14.4
+            and
+            job:slo_burn_rate:ratio_rate5m > 14.4
+          )
+        labels:
+          severity: critical
+          slo: latency
+        annotations:
+          summary: "Critical: API latency SLO burning too fast"
+          description: |
+            The API is burning error budget at 14.4x the acceptable rate.
+            
+            Current metrics:
+            - 1h burn rate: {{ $value | humanizePercentage }}
+            - 5m burn rate: {{ printf "job:slo_burn_rate:ratio_rate5m" | query | first | value | humanizePercentage }}
+            - Error budget remaining: {{ printf "job:slo_error_budget:ratio" | query | first | value | humanizePercentage }}
+            
+            At this rate, the entire 30-day error budget will be exhausted in ~2 days.
+            
+            ACTION REQUIRED: Investigate immediately. Check for:
+            - Deployment issues
+            - Database/Redis slowness
+            - Increased traffic patterns
+      
+      # HIGH: 6x burn rate (5-day exhaustion)
+      # Page during work hours
+      - alert: ErrorBudgetBurnHigh
+        expr: |
+          (
+            job:slo_burn_rate:ratio_rate6h > 6
+            and
+            job:slo_burn_rate:ratio_rate1h > 6
+          )
+        labels:
+          severity: high
+          slo: latency
+        annotations:
+          summary: "High: API latency SLO burning faster than normal"
+          description: |
+            The API is burning error budget at 6x the acceptable rate.
+            
+            Current metrics:
+            - 6h burn rate: {{ $value | humanizePercentage }}
+            - 1h burn rate: {{ printf "job:slo_burn_rate:ratio_rate1h" | query | first | value | humanizePercentage }}
+            - Error budget remaining: {{ printf "job:slo_error_budget:ratio" | query | first | value | humanizePercentage }}
+            
+            At this rate, error budget exhausts in ~5 days.
+            
+            ACTION: Investigate within business hours. May need rollback or optimization.
+      
+      # MEDIUM: 3x burn rate (10-day exhaustion)
+      # Create ticket, fix tomorrow
+      - alert: ErrorBudgetBurnMedium
+        expr: |
+          (
+            job:slo_burn_rate:ratio_rate1d > 3
+            and
+            job:slo_burn_rate:ratio_rate6h > 3
+          )
+        labels:
+          severity: warning
+          slo: latency
+        annotations:
+          summary: "Medium: API latency degrading over sustained period"
+          description: |
+            The API is burning error budget at 3x the acceptable rate.
+            
+            Current metrics:
+            - 1d burn rate: {{ $value | humanizePercentage }}
+            - 6h burn rate: {{ printf "job:slo_burn_rate:ratio_rate6h" | query | first | value | humanizePercentage }}
+            - Error budget remaining: {{ printf "job:slo_error_budget:ratio" | query | first | value | humanizePercentage }}
+            
+            At this rate, error budget exhausts in ~10 days.
+            
+            ACTION: Create ticket. Investigate performance trends.
+      
+      # LOW: 1x burn rate (30-day exhaustion, right at target)
+      # Informational, investigate next sprint
+      - alert: ErrorBudgetBurnLow
+        expr: |
+          (
+            job:slo_burn_rate:ratio_rate3d > 1
+            and
+            job:slo_burn_rate:ratio_rate1d > 1
+          )
+        for: 1h
+        labels:
+          severity: info
+          slo: latency
+        annotations:
+          summary: "Info: API latency exactly at SLO threshold"
+          description: |
+            The API is burning error budget at exactly the target rate.
+            
+            Current metrics:
+            - 3d burn rate: {{ $value | humanizePercentage }}
+            - 1d burn rate: {{ printf "job:slo_burn_rate:ratio_rate1d" | query | first | value | humanizePercentage }}
+            - Error budget remaining: {{ printf "job:slo_error_budget:ratio" | query | first | value | humanizePercentage }}
+            
+            This is expected behavior, but monitor for trends.
+            
+            ACTION: Review in next sprint planning.
+      
+      # BUDGET EXHAUSTED: Error budget completely consumed
+      - alert: ErrorBudgetExhausted
+        expr: |
+          job:slo_error_budget:ratio < 0
+        for: 5m
+        labels:
+          severity: critical
+          slo: latency
+        annotations:
+          summary: "CRITICAL: API error budget exhausted"
+          description: |
+            The API has consumed its entire 30-day error budget.
+            
+            Error budget remaining: {{ $value | humanizePercentage }}
+            
+            STOP ALL FEATURE DEPLOYMENTS. Focus on reliability.
+            
+            Actions required:
+            1. Halt all non-critical deployments
+            2. Review recent changes
+            3. Implement performance improvements
+            4. Do not ship new features until budget recovers
