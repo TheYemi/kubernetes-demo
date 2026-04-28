@@ -220,8 +220,7 @@ spec:
       ports:
         - protocol: UDP
           port: 53
-    - to:
-        - namespaceSelector: {}
+  
       ports:
         - protocol: TCP
           port: 443
@@ -277,8 +276,7 @@ spec:
       ports:
         - protocol: UDP
           port: 53
-    - to:
-        - namespaceSelector: {}
+
       ports:
         - protocol: TCP
           port: 443
