@@ -17,7 +17,6 @@ spec:
       - name: fluent-bit
         image: fluent/fluent-bit:3.2
         securityContext:
-          runAsNonRoot: true
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           capabilities:
