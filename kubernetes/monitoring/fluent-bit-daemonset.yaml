@@ -27,11 +27,8 @@ spec:
           readOnlyRootFilesystem: false
         volumeMounts:
         - name: varlog
-          mountPath: /var/log 
-          readOnly: true
-        - name: varpodlogs
-          mountPath: /var/log/pods
-          readOnly: true
+          mountPath: /var/log  
+          readOnly: false    
         - name: config
           mountPath: /fluent-bit/etc
         resources:
