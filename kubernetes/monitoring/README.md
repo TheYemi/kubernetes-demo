@@ -14,10 +14,10 @@
 
 Network policies are **intentionally not applied** to the monitoring namespace.
 
-**Rationale:**
+**Thought process:**
 - System-level observability components require broad cluster access to scrape metrics and collect logs
 - Restricting their network access creates operational complexity without meaningful security benefit
-- Defense-in-depth is enforced at the application layer (see dev/staging/prod namespace policies)
+- Defense-in-depth is enforced at the application layer
 - This follows production patterns where platform/system namespaces have relaxed policies
 
 **Security is still enforced via:**
@@ -26,4 +26,3 @@ Network policies are **intentionally not applied** to the monitoring namespace.
 - RBAC for service accounts
 - Application-layer network policies in dev/staging/prod namespaces
 
-For strict application workload policies, see `kubernetes/overlays/{dev,staging,prod}/network-policy.yaml`.
