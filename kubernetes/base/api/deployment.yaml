@@ -11,6 +11,9 @@ spec:
       labels:
         app: api
     spec:
+      securityContext:           
+        runAsNonRoot: true
+    spec:
       serviceAccountName: api-sa
       affinity:
         podAntiAffinity:

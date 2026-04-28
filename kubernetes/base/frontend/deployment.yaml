@@ -11,6 +11,9 @@ spec:
       labels:
         app: frontend
     spec:
+      securityContext:          
+        runAsNonRoot: true
+    spec:
       serviceAccountName: frontend-sa
       affinity:
         podAntiAffinity:

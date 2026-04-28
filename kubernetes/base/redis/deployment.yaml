@@ -13,6 +13,7 @@ spec:
         app: redis
     spec:
       securityContext:
+        runAsNonRoot: true
         fsGroup: 999
       serviceAccountName: redis-sa
       affinity:
