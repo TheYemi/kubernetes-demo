@@ -10,121 +10,249 @@ data:
       interval: 30s
       rules:
       
-      # good vs rotal requests (in multiple time windows)
+      #############################
+      # USER-FACING ENDPOINTS
+      #############################
       
-      - record: job:slo_requests_total:rate5m
+      # good vs total requests 
+      
+      - record: job:slo_user_requests_total:rate5m
         expr: |
-          sum(rate(http_request_duration_seconds_count{job="api"}[5m]))
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint!~"health|metrics"}[5m]))
       
-      - record: job:slo_requests_good:rate5m
+      - record: job:slo_user_requests_good:rate5m
         expr: |
-          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2"}[5m]))
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2", endpoint!~"health|metrics"}[5m]))
       
-      - record: job:slo_requests_total:rate1h
+      - record: job:slo_user_requests_total:rate1h
         expr: |
-          sum(rate(http_request_duration_seconds_count{job="api"}[1h]))
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint!~"health|metrics"}[1h]))
       
-      - record: job:slo_requests_good:rate1h
+      - record: job:slo_user_requests_good:rate1h
         expr: |
-          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2"}[1h]))
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2", endpoint!~"health|metrics"}[1h]))
       
-      - record: job:slo_requests_total:rate6h
+      - record: job:slo_user_requests_total:rate6h
         expr: |
-          sum(rate(http_request_duration_seconds_count{job="api"}[6h]))
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint!~"health|metrics"}[6h]))
       
-      - record: job:slo_requests_good:rate6h
+      - record: job:slo_user_requests_good:rate6h
         expr: |
-          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2"}[6h]))
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2", endpoint!~"health|metrics"}[6h]))
       
-      - record: job:slo_requests_total:rate1d
+      - record: job:slo_user_requests_total:rate1d
         expr: |
-          sum(rate(http_request_duration_seconds_count{job="api"}[1d]))
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint!~"health|metrics"}[1d]))
       
-      - record: job:slo_requests_good:rate1d
+      - record: job:slo_user_requests_good:rate1d
         expr: |
-          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2"}[1d]))
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2", endpoint!~"health|metrics"}[1d]))
       
-      - record: job:slo_requests_total:rate3d
+      - record: job:slo_user_requests_total:rate3d
         expr: |
-          sum(rate(http_request_duration_seconds_count{job="api"}[3d]))
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint!~"health|metrics"}[3d]))
       
-      - record: job:slo_requests_good:rate3d
+      - record: job:slo_user_requests_good:rate3d
         expr: |
-          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2"}[3d]))
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2", endpoint!~"health|metrics"}[3d]))
       
-      - record: job:slo_requests_total:rate30d
+      - record: job:slo_user_requests_total:rate30d
         expr: |
-          sum(rate(http_request_duration_seconds_count{job="api"}[30d]))
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint!~"health|metrics"}[30d]))
       
-      - record: job:slo_requests_good:rate30d
+      - record: job:slo_user_requests_good:rate30d
         expr: |
-          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2"}[30d]))
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.2", endpoint!~"health|metrics"}[30d]))
       
       
-      # error rates (for all time windows)
+      # error rates 
       
-      - record: job:slo_errors:ratio_rate5m
+      - record: job:slo_user_errors:ratio_rate5m
         expr: |
-          (job:slo_requests_total:rate5m - job:slo_requests_good:rate5m) 
+          (job:slo_user_requests_total:rate5m - job:slo_user_requests_good:rate5m) 
           / 
-          job:slo_requests_total:rate5m
+          job:slo_user_requests_total:rate5m
       
-      - record: job:slo_errors:ratio_rate1h
+      - record: job:slo_user_errors:ratio_rate1h
         expr: |
-          (job:slo_requests_total:rate1h - job:slo_requests_good:rate1h) 
+          (job:slo_user_requests_total:rate1h - job:slo_user_requests_good:rate1h) 
           / 
-          job:slo_requests_total:rate1h
+          job:slo_user_requests_total:rate1h
       
-      - record: job:slo_errors:ratio_rate6h
+      - record: job:slo_user_errors:ratio_rate6h
         expr: |
-          (job:slo_requests_total:rate6h - job:slo_requests_good:rate6h) 
+          (job:slo_user_requests_total:rate6h - job:slo_user_requests_good:rate6h) 
           / 
-          job:slo_requests_total:rate6h
+          job:slo_user_requests_total:rate6h
       
-      - record: job:slo_errors:ratio_rate1d
+      - record: job:slo_user_errors:ratio_rate1d
         expr: |
-          (job:slo_requests_total:rate1d - job:slo_requests_good:rate1d) 
+          (job:slo_user_requests_total:rate1d - job:slo_user_requests_good:rate1d) 
           / 
-          job:slo_requests_total:rate1d
+          job:slo_user_requests_total:rate1d
       
-      - record: job:slo_errors:ratio_rate3d
+      - record: job:slo_user_errors:ratio_rate3d
         expr: |
-          (job:slo_requests_total:rate3d - job:slo_requests_good:rate3d) 
+          (job:slo_user_requests_total:rate3d - job:slo_user_requests_good:rate3d) 
           / 
-          job:slo_requests_total:rate3d
+          job:slo_user_requests_total:rate3d
       
-      - record: job:slo_errors:ratio_rate30d
+      - record: job:slo_user_errors:ratio_rate30d
         expr: |
-          (job:slo_requests_total:rate30d - job:slo_requests_good:rate30d) 
+          (job:slo_user_requests_total:rate30d - job:slo_user_requests_good:rate30d) 
           / 
-          job:slo_requests_total:rate30d
+          job:slo_user_requests_total:rate30d
       
       
-      # burn rates (for all time windows)
+      # burn rates
       
-      - record: job:slo_burn_rate:ratio_rate5m
+      - record: job:slo_user_burn_rate:ratio_rate5m
         expr: |
-          job:slo_errors:ratio_rate5m / 0.01
+          job:slo_user_errors:ratio_rate5m / 0.01
       
-      - record: job:slo_burn_rate:ratio_rate1h
+      - record: job:slo_user_burn_rate:ratio_rate1h
         expr: |
-          job:slo_errors:ratio_rate1h / 0.01
+          job:slo_user_errors:ratio_rate1h / 0.01
       
-      - record: job:slo_burn_rate:ratio_rate6h
+      - record: job:slo_user_burn_rate:ratio_rate6h
         expr: |
-          job:slo_errors:ratio_rate6h / 0.01
+          job:slo_user_errors:ratio_rate6h / 0.01
       
-      - record: job:slo_burn_rate:ratio_rate1d
+      - record: job:slo_user_burn_rate:ratio_rate1d
         expr: |
-          job:slo_errors:ratio_rate1d / 0.01
+          job:slo_user_errors:ratio_rate1d / 0.01
       
-      - record: job:slo_burn_rate:ratio_rate3d
+      - record: job:slo_user_burn_rate:ratio_rate3d
         expr: |
-          job:slo_errors:ratio_rate3d / 0.01
+          job:slo_user_errors:ratio_rate3d / 0.01
       
       
-      # error budget remaining (30-day window)
+      # Error Budget Remaining (30-day window)
       
-      - record: job:slo_error_budget:ratio
+      - record: job:slo_user_error_budget:ratio
         expr: |
-          1 - (job:slo_errors:ratio_rate30d / 0.01)
+          1 - (job:slo_user_errors:ratio_rate30d / 0.01)
+      
+      
+      #######################
+      # HEALTH ENDPOINT
+      #######################
+      
+      # good vs total requests 
+      
+      - record: job:slo_health_requests_total:rate5m
+        expr: |
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint="health"}[5m]))
+      
+      - record: job:slo_health_requests_good:rate5m
+        expr: |
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.05", endpoint="health"}[5m]))
+      
+      - record: job:slo_health_requests_total:rate1h
+        expr: |
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint="health"}[1h]))
+      
+      - record: job:slo_health_requests_good:rate1h
+        expr: |
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.05", endpoint="health"}[1h]))
+      
+      - record: job:slo_health_requests_total:rate6h
+        expr: |
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint="health"}[6h]))
+      
+      - record: job:slo_health_requests_good:rate6h
+        expr: |
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.05", endpoint="health"}[6h]))
+      
+      - record: job:slo_health_requests_total:rate1d
+        expr: |
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint="health"}[1d]))
+      
+      - record: job:slo_health_requests_good:rate1d
+        expr: |
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.05", endpoint="health"}[1d]))
+      
+      - record: job:slo_health_requests_total:rate3d
+        expr: |
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint="health"}[3d]))
+      
+      - record: job:slo_health_requests_good:rate3d
+        expr: |
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.05", endpoint="health"}[3d]))
+      
+      - record: job:slo_health_requests_total:rate30d
+        expr: |
+          sum(rate(http_request_duration_seconds_count{job="api", endpoint="health"}[30d]))
+      
+      - record: job:slo_health_requests_good:rate30d
+        expr: |
+          sum(rate(http_request_duration_seconds_bucket{job="api", le="0.05", endpoint="health"}[30d]))
+      
+      
+      # error rates
+      
+      - record: job:slo_health_errors:ratio_rate5m
+        expr: |
+          (job:slo_health_requests_total:rate5m - job:slo_health_requests_good:rate5m) 
+          / 
+          job:slo_health_requests_total:rate5m
+      
+      - record: job:slo_health_errors:ratio_rate1h
+        expr: |
+          (job:slo_health_requests_total:rate1h - job:slo_health_requests_good:rate1h) 
+          / 
+          job:slo_health_requests_total:rate1h
+      
+      - record: job:slo_health_errors:ratio_rate6h
+        expr: |
+          (job:slo_health_requests_total:rate6h - job:slo_health_requests_good:rate6h) 
+          / 
+          job:slo_health_requests_total:rate6h
+      
+      - record: job:slo_health_errors:ratio_rate1d
+        expr: |
+          (job:slo_health_requests_total:rate1d - job:slo_health_requests_good:rate1d) 
+          / 
+          job:slo_health_requests_total:rate1d
+      
+      - record: job:slo_health_errors:ratio_rate3d
+        expr: |
+          (job:slo_health_requests_total:rate3d - job:slo_health_requests_good:rate3d) 
+          / 
+          job:slo_health_requests_total:rate3d
+      
+      - record: job:slo_health_errors:ratio_rate30d
+        expr: |
+          (job:slo_health_requests_total:rate30d - job:slo_health_requests_good:rate30d) 
+          / 
+          job:slo_health_requests_total:rate30d
+      
+      
+      # burn rates (error budget: 0.1% = 0.001)
+      
+      - record: job:slo_health_burn_rate:ratio_rate5m
+        expr: |
+          job:slo_health_errors:ratio_rate5m / 0.001
+      
+      - record: job:slo_health_burn_rate:ratio_rate1h
+        expr: |
+          job:slo_health_errors:ratio_rate1h / 0.001
+      
+      - record: job:slo_health_burn_rate:ratio_rate6h
+        expr: |
+          job:slo_health_errors:ratio_rate6h / 0.001
+      
+      - record: job:slo_health_burn_rate:ratio_rate1d
+        expr: |
+          job:slo_health_errors:ratio_rate1d / 0.001
+      
+      - record: job:slo_health_burn_rate:ratio_rate3d
+        expr: |
+          job:slo_health_errors:ratio_rate3d / 0.001
+      
+      
+      # error budget remaining
+      
+      - record: job:slo_health_error_budget:ratio
+        expr: |
+          1 - (job:slo_health_errors:ratio_rate30d / 0.001)
