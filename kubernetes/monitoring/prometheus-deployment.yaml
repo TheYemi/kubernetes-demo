@@ -26,11 +26,9 @@ spec:
         - name: prometheus-config
           mountPath: /etc/prometheus
         - name: prometheus-slo-rules              
-          mountPath: /etc/prometheus/slo-rules.yml
-          subPath: slo-rules.yml
+          mountPath: /etc/prometheus/rules
         - name: prometheus-slo-alerts            
-          mountPath: /etc/prometheus/slo-alerts.yml
-          subPath: slo-alerts.yml
+          mountPath: /etc/prometheus/alerts
       volumes:
       - name: prometheus-config
         configMap:
