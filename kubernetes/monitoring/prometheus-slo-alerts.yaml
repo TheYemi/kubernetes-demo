@@ -144,8 +144,8 @@ data:
       interval: 30s
       rules:
       
-      # CRITICAL: 14.4x burn rate
-      - alert: HealthEndpointErrorBudgetBurnCritical
+      # HIGH: 14.4x burn rate
+      - alert: HealthEndpointErrorBudgetBurnHigh
         expr: |
           (
             job:slo_health_burn_rate:ratio_rate1h > 14.4
@@ -153,10 +153,10 @@ data:
             job:slo_health_burn_rate:ratio_rate5m > 14.4
           )
         labels:
-          severity: critical
+          severity: high
           slo: health_latency
         annotations:
-          summary: "CRITICAL: Health checks severely degraded"
+          summary: "HIGH: Health checks severely degraded"
           description: |
             /health endpoint latency exceeding 50ms threshold.
             

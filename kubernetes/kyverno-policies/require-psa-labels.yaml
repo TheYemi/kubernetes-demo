@@ -1,0 +1,40 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-psa-labels
+  annotations:
+    policies.kyverno.io/title: Require Pod Security Admission Labels
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Ensures all namespaces have PSA labels configured (enforce, audit, warn)
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: check-psa-labels
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+          - argocd
+    validate:
+      message: >-
+        Namespace must have PSA labels:
+        pod-security.kubernetes.io/enforce,
+        pod-security.kubernetes.io/audit,
+        pod-security.kubernetes.io/warn
+      pattern:
+        metadata:
+          labels:
+            pod-security.kubernetes.io/enforce: "?*"
+            pod-security.kubernetes.io/audit: "?*"
+            pod-security.kubernetes.io/warn: "?*"
