@@ -18,3 +18,4 @@ kubeseal
 **/venv
 sealed-secrets-master.key
 *.tfvars
+infrastructure/alertmanager.yml

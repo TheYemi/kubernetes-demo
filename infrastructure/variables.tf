@@ -39,3 +39,15 @@ variable "instance_type" {
   type        = string
   default     = "c7i-flex.large"
 }
+
+variable "grafana_admin_password" {
+  description = "Grafana admin password"
+  type        = string
+  sensitive   = true
+}
+
+variable "redis_password" {
+  description = "Redis password for application pods"
+  type        = string
+  sensitive   = true
+}
