@@ -17,3 +17,4 @@ kubeseal-*.tar.gz
 kubeseal
 **/venv
 sealed-secrets-master.key
+*.tfvars
