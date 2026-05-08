@@ -41,13 +41,13 @@ data:
       
       # Pod Alerts
       - alert: PodCrashLooping
-        expr: rate(kube_pod_container_status_restarts_total[10m]) * 60 > 0.3
+        expr: rate(kube_pod_container_status_restarts_total[5m]) * 300 > 3
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "Pod crash looping"
-          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently"
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has restarted {{ $value }} times in the last 5 minutes"
       
       - alert: DeploymentReplicasMismatch
         expr: |

@@ -29,6 +29,8 @@ spec:
           mountPath: /etc/prometheus/rules
         - name: prometheus-slo-alerts            
           mountPath: /etc/prometheus/alerts
+        - name: prometheus-infrastructure-alerts
+          mountPath: /etc/prometheus/infrastructure-alerts
       volumes:
       - name: prometheus-config
         configMap:
@@ -39,3 +41,6 @@ spec:
       - name: prometheus-slo-alerts
         configMap:
           name: prometheus-slo-alerts
+      - name: prometheus-infrastructure-alerts
+        configMap:
+          name: prometheus-infrastructure-alerts
