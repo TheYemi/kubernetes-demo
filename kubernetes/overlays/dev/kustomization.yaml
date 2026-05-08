@@ -11,6 +11,9 @@ resources:
 - ../../base/redis
 - ../../base/network-policies
 - app-sealed-secret.yaml
+- secretstore.yaml
+- app-externalsecret.yaml
+
 
 commonLabels:
   environment: dev
