@@ -10,7 +10,6 @@ resources:
   - ../../base/frontend
   - ../../base/redis
   - ../../base/network-policies
-  - app-sealed-secret.yaml
   - secretstore.yaml
   - app-externalsecret.yaml
 
