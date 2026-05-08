@@ -31,6 +31,9 @@ spec:
           mountPath: /etc/prometheus/alerts
         - name: prometheus-infrastructure-alerts
           mountPath: /etc/prometheus/infrastructure-alerts
+        - name: prometheus-basic-alerts
+          mountPath: /etc/prometheus/alerts/basic-alerts.yml
+          subPath: basic-alerts.yml
       volumes:
       - name: prometheus-config
         configMap:
@@ -44,3 +47,6 @@ spec:
       - name: prometheus-infrastructure-alerts
         configMap:
           name: prometheus-infrastructure-alerts
+      - name: prometheus-basic-alerts
+        configMap:
+          name: prometheus-basic-alerts
