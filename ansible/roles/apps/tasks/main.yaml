@@ -37,25 +37,6 @@
   delay: 10
   until: metrics_pods.stdout | trim == "0"
 
-- name: Install Sealed Secrets controller
-  become_user: ubuntu
-  command: >
-    kubectl apply -f
-    https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/controller.yaml
-  register: sealed_install
-  retries: 3
-  delay: 10
-  until: sealed_install.rc == 0
-
-- name: Wait for Sealed Secrets controller to be ready
-  become_user: ubuntu
-  shell: |
-    kubectl get pods -n kube-system -l name=sealed-secrets-controller --no-headers | grep -v "Running" | wc -l
-  register: sealed_pods
-  retries: 30
-  delay: 10
-  until: sealed_pods.stdout | trim == "0"
-
 - name: Install AWS EBS CSI Driver
   become_user: ubuntu
   command: >
