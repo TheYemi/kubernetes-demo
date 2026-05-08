@@ -45,6 +45,7 @@ resource "aws_instance" "worker" {
     volume_size = 20
     volume_type = "gp3"
     encrypted   = true
+    delete_on_termination = true
   }
 
   tags = {
