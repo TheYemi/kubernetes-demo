@@ -16,7 +16,7 @@ spec:
         backgroundController:
           replicas: 1
         cleanupController:
-          replicas: 1
+          enabled: false
         reportsController:
           replicas: 1
   destination:
