@@ -47,7 +47,11 @@ spec:
         - name: dashboards-provisioning    
           mountPath: /etc/grafana/provisioning/dashboards
         - name: slo-dashboard              
-          mountPath: /var/lib/grafana/dashboards
+          mountPath: /var/lib/grafana/dashboards/slo-dashboard.json
+          subPath: slo-dashboard.json
+        - name: cluster-health-dashboard
+          mountPath: /var/lib/grafana/dashboards/cluster-health.json
+          subPath: cluster-health.json
       volumes:
       - name: grafana-storage
         persistentVolumeClaim:
@@ -61,3 +65,6 @@ spec:
       - name: slo-dashboard               
         configMap:
           name: grafana-slo-dashboard
+      - name: cluster-health-dashboard
+        configMap:
+          name: grafana-dashboard-cluster-health
