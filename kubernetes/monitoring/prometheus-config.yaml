@@ -17,8 +17,8 @@ data:
           path_prefix: /alertmanager
 
     rule_files:                
-        - /etc/prometheus/alerts/*.yml
-        - /etc/prometheus/rules/*.yml
+      - /etc/prometheus/alerts/*.yml
+      - /etc/prometheus/rules/*.yml
 
     scrape_configs:
       - job_name: 'prometheus'
