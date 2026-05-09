@@ -25,7 +25,7 @@ data:
         expr: (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)) * 100 > 85
         for: 10m
         labels:
-          severity: warning
+          severity: warning 
         annotations:
           summary: "Node CPU usage high"
           description: "Node {{ $labels.instance }} CPU usage is {{ $value | humanize }}%"

@@ -4,7 +4,7 @@ metadata:
   name: prometheus-slo-rules
   namespace: monitoring
 data:
-  slo-rules.yml: |
+  slo-rules.yaml: |
     groups:
     - name: slo_recording_rules
       interval: 30s
