@@ -52,6 +52,9 @@ spec:
         - name: cluster-health-dashboard
           mountPath: /var/lib/grafana/dashboards/cluster-health.json
           subPath: cluster-health.json
+        - name: app-detail-dashboard
+          mountPath: /var/lib/grafana/dashboards/app-detail.json
+          subPath: app-detail.json
       volumes:
       - name: grafana-storage
         persistentVolumeClaim:
@@ -68,3 +71,6 @@ spec:
       - name: cluster-health-dashboard
         configMap:
           name: grafana-dashboard-cluster-health
+      - name: app-detail-dashboard
+        configMap:
+          name: grafana-dashboard-app-detail
