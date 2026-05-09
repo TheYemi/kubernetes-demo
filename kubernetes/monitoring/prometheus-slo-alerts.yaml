@@ -153,7 +153,7 @@ data:
             job:slo_health_burn_rate:ratio_rate5m > 14.4
           )
         labels:
-          severity: high
+          severity: critical
           slo: health_latency
         annotations:
           summary: "HIGH: Health checks severely degraded"
