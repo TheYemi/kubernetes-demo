@@ -145,7 +145,7 @@ data:
       rules:
       
       # HIGH: 14.4x burn rate
-      - alert: HealthEndpointErrorBudgetBurnHigh
+      - alert: HealthEndpointErrorBudgetBurnCritical
         expr: |
           (
             job:slo_health_burn_rate:ratio_rate1h > 14.4
