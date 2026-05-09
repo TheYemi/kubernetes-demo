@@ -18,21 +18,21 @@ spec:
       - name: prometheus
         image: prom/prometheus:v2.48.0
         args:
-        - '--config.file=/etc/prometheus/prometheus.yaml'
+        - '--config.file=/config/prometheus.yaml'
         - '--web.external-url=/prometheus/'
         ports:
         - containerPort: 9090
         volumeMounts:
         - name: prometheus-config
-          mountPath: /etc/prometheus/prometheus.yaml
+          mountPath: /config/prometheus.yaml
           subPath: prometheus.yaml
         - name: prometheus-slo-rules              
-          mountPath: /etc/prometheus/rules
+          mountPath: /config/rules
         - name: prometheus-slo-alerts            
-          mountPath: /etc/prometheus/alerts/slo-alerts.yaml
+          mountPath: /config/alerts/slo-alerts.yaml
           subPath: slo-alerts.yaml
         - name: prometheus-cluster-alerts
-          mountPath: /etc/prometheus/alerts/cluster-alerts.yaml
+          mountPath: /config/alerts/cluster-alerts.yaml
           subPath: cluster-alerts.yaml
       volumes:
       - name: prometheus-config
