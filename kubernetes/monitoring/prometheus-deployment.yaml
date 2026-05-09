@@ -29,11 +29,9 @@ spec:
           mountPath: /etc/prometheus/rules
         - name: prometheus-slo-alerts            
           mountPath: /etc/prometheus/alerts
-        - name: prometheus-infrastructure-alerts
-          mountPath: /etc/prometheus/infrastructure-alerts
-        - name: prometheus-basic-alerts
-          mountPath: /etc/prometheus/alerts/basic-alerts.yml
-          subPath: basic-alerts.yml
+        - name: prometheus-cluster-alerts
+          mountPath: /etc/prometheus/alerts/cluster-alerts.yml
+          subPath: cluster-alerts.yml
       volumes:
       - name: prometheus-config
         configMap:
@@ -44,9 +42,6 @@ spec:
       - name: prometheus-slo-alerts
         configMap:
           name: prometheus-slo-alerts
-      - name: prometheus-infrastructure-alerts
+      - name: prometheus-cluster-alerts
         configMap:
-          name: prometheus-infrastructure-alerts
-      - name: prometheus-basic-alerts
-        configMap:
-          name: prometheus-basic-alerts
+          name: prometheus-cluster-alerts
