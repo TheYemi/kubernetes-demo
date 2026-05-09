@@ -8,7 +8,7 @@ metadata:
 data:
   cluster-alerts.yaml: |
     groups:
-    # Basic node alerts
+    # node alerts
     - name: node-alerts
       interval: 30s
       rules:
@@ -21,11 +21,6 @@ data:
           summary: "Node {{ $labels.instance }} is down"
           description: "Node has been unreachable for more than 1 minute."
     
-    # Infrastructure node alerts
-    - name: infrastructure-node-alerts
-      interval: 30s
-      rules:
-      # Node Alerts
       - alert: NodeHighCPU
         expr: (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)) * 100 > 85
         for: 10m
