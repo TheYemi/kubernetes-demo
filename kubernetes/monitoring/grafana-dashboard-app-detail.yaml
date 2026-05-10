@@ -341,7 +341,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(http_request_duration_seconds_count{job=\"api\",namespace=~\"$namespace\",status_code=~\"5..\"}[5m])) by (namespace) / sum(rate(http_request_duration_seconds_count{job=\"api\",namespace=~\"$namespace\"}[5m])) by (namespace)",
+              "expr": "(sum(rate(http_request_duration_seconds_count{job=\"api\",namespace=~\"$namespace\",status_code=~\"5..\"}[5m])) by (namespace) or vector(0)) / sum(rate(http_request_duration_seconds_count{job=\"api\",namespace=~\"$namespace\"}[5m])) by (namespace)",
               "legendFormat": "{{namespace}}",
               "refId": "A"
             }
