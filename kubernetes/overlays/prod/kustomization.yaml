@@ -4,87 +4,94 @@ kind: Kustomization
 namespace: prod
 
 resources:
-  - namespace.yaml
-  - ../../base/common
-  - ../../base/api
-  - ../../base/frontend
-  - ../../base/redis
-  - ../../base/network-policies
-  - secretstore.yaml
-  - app-externalsecret.yaml
+- namespace.yaml
+- ../../base/common
+- ../../base/api
+- ../../base/frontend
+- ../../base/redis
+- ../../base/network-policies
+- secretstore.yaml
+- app-externalsecret.yaml
 
 commonLabels:
   environment: prod
 
-patches:
   # API customizations
-  - target:
-      kind: Deployment
-      name: api
-    patch: |-
-      - op: add
-        path: /spec/replicas
-        value: 3
-      - op: add
-        path: /spec/template/spec/containers/0/resources
-        value:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
   
   # Frontend customizations
-  - target:
-      kind: Deployment
-      name: frontend
-    patch: |-
-      - op: add
-        path: /spec/replicas
-        value: 3
-      - op: add
-        path: /spec/template/spec/containers/0/resources
-        value:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
   
   # API HPA
-  - target:
-      kind: HorizontalPodAutoscaler
-      name: api-hpa
-    patch: |-
-      - op: add
-        path: /spec/minReplicas
-        value: 3
-      - op: add
-        path: /spec/maxReplicas
-        value: 6
   
   # Frontend HPA
-  - target:
-      kind: HorizontalPodAutoscaler
-      name: frontend-hpa
-    patch: |-
-      - op: add
-        path: /spec/minReplicas
-        value: 3
-      - op: add
-        path: /spec/maxReplicas
-        value: 6
   
   # ConfigMap
-  - target:
-      kind: ConfigMap
-      name: app-config
-    patch: |-
-      - op: replace
-        path: /data/APP_ENV
-        value: "production"
-      - op: replace
-        path: /data/LOG_LEVEL
-        value: "info"
+patches:
+- patch: |-
+    - op: add
+      path: /spec/replicas
+      value: 3
+    - op: add
+      path: /spec/template/spec/containers/0/resources
+      value:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "256Mi"
+          cpu: "500m"
+  target:
+    kind: Deployment
+    name: api
+- patch: |-
+    - op: add
+      path: /spec/replicas
+      value: 3
+    - op: add
+      path: /spec/template/spec/containers/0/resources
+      value:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "256Mi"
+          cpu: "500m"
+  target:
+    kind: Deployment
+    name: frontend
+- patch: |-
+    - op: add
+      path: /spec/minReplicas
+      value: 3
+    - op: add
+      path: /spec/maxReplicas
+      value: 6
+  target:
+    kind: HorizontalPodAutoscaler
+    name: api-hpa
+- patch: |-
+    - op: add
+      path: /spec/minReplicas
+      value: 3
+    - op: add
+      path: /spec/maxReplicas
+      value: 6
+  target:
+    kind: HorizontalPodAutoscaler
+    name: frontend-hpa
+- patch: |-
+    - op: replace
+      path: /data/APP_ENV
+      value: "production"
+    - op: replace
+      path: /data/LOG_LEVEL
+      value: "info"
+  target:
+    kind: ConfigMap
+    name: app-config
+images:
+- name: theyemiii/task-api
+  newName: theyemiii/task-api
+  newTag: 19ba40eabbafdb8a63ac886d31e6ad2c91365d6f
+- name: theyemiii/task-frontend
+  newName: theyemiii/task-frontend
+  newTag: 19ba40eabbafdb8a63ac886d31e6ad2c91365d6f
