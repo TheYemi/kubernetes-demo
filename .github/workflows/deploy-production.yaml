@@ -3,9 +3,13 @@ name: Deploy to Production
 on:
   workflow_dispatch:
     inputs:
-      image_tag:
-        description: 'Image tag to deploy (e.g., commit SHA)'
-        required: true
+      api_tag:
+        description: 'API image tag to deploy (e.g., commit SHA)'
+        required: false
+        type: string
+      frontend_tag:
+        description: 'Frontend image tag to deploy (e.g., commit SHA)'
+        required: false
         type: string
 
 permissions:
@@ -46,4 +50,5 @@ jobs:
       - name: Deployment summary
         run: |
           echo "Successfully deployed to production!"
-          echo "Image tag: ${{ inputs.image_tag }}"
+          echo "API tag: ${{ inputs.api_tag || 'unchanged' }}"
+          echo "Frontend tag: ${{ inputs.frontend_tag || 'unchanged' }}"
