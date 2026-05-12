@@ -282,3 +282,9 @@ NAT Gateway and ALB charge even when instances are stopped. Use `terraform destr
 
 ## Future Enhancements
 - Adding TLS at ALB 
+
+## About This Project
+
+This is a solo portfolio project demonstrating production-grade Kubernetes infrastructure and SRE practices.
+
+**Note:** Some commits may appear under different GitHub accounts (TheYemi/Opeyemi99) due to Git configuration differences across development environments. Both accounts belong to me... the project is entirely my own work.
