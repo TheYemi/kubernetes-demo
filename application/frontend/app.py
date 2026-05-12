@@ -17,7 +17,7 @@ REQUEST_COUNT = Counter(
 REQUEST_DURATION = Histogram(
     'http_request_duration_seconds',
     'HTTP request latency in seconds',
-    ['method', 'endpoint'],
+    ['method', 'endpoint', 'status_code'],
     buckets=[0.01, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
 )
 
@@ -31,7 +31,8 @@ def after_request(response):
         latency = time.time() - request._start_time
         REQUEST_DURATION.labels(
             method=request.method,
-            endpoint=request.endpoint or 'unknown'
+            endpoint=request.endpoint or 'unknown',
+            status_code=response.status_code
         ).observe(latency)
         
         REQUEST_COUNT.labels(
