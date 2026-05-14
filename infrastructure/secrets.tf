@@ -2,6 +2,8 @@ resource "aws_secretsmanager_secret" "grafana_password" {
   name        = "${var.project_name}-grafana-admin-password"
   description = "Grafana admin password for ${var.project_name} cluster"
   
+  recovery_window_in_days = 0
+
   tags = {
     Project     = var.project_name
     ManagedBy   = "Terraform"
@@ -18,6 +20,8 @@ resource "aws_secretsmanager_secret" "redis_password" {
   name        = "${var.project_name}-redis-password"
   description = "Redis password for ${var.project_name} applications"
   
+  recovery_window_in_days = 0
+
   tags = {
     Project     = var.project_name
     ManagedBy   = "Terraform"
@@ -33,6 +37,8 @@ resource "aws_secretsmanager_secret_version" "redis_password" {
 resource "aws_secretsmanager_secret" "alertmanager_config" {
   name        = "${var.project_name}-alertmanager-config"
   description = "Alertmanager configuration with Slack webhook"
+  
+  recovery_window_in_days = 0
   
   tags = {
     Project     = var.project_name
