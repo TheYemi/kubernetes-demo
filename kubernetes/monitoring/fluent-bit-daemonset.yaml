@@ -29,6 +29,9 @@ spec:
         - name: varlog
           mountPath: /var/log/containers 
           readOnly: false    
+        - name: varpodlogs          
+          mountPath: /var/log/pods  
+          readOnly: false
         - name: config
           mountPath: /fluent-bit/etc
         resources:
