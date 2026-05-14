@@ -242,7 +242,7 @@ Code Push → Build & Scan → Tag Image → Update Kustomization → ArgoCD Syn
 ## Documentation
 
 - **Architecture Diagram:** See `docs/architecture.md`
-- **Troubleshooting Guide:** See `docs/problems.txt` (30+ issues documented and resolved)
+- **Troubleshooting Guide:** See `docs/problems.md` (30+ issues documented and resolved)
 - **Setup Guide:** See `docs/setup.md`
 
 ---
