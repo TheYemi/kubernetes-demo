@@ -121,33 +121,30 @@ Code Push → Build & Scan → Tag Image → Update Kustomization → ArgoCD Syn
 ## Repository Structure
 .
 ├── application/
-│   ├── api/                    # flask REST API
-│   ├── frontend/               # flask web UI
-│   └── redis/                  # redis configuration
+│   ├── api/                    # Flask REST API
+│   ├── frontend/               # Flask web UI
+│   └── redis/                  # Redis configuration
 ├── infrastructure/
-│   ├── main.tf                 # aws resources (VPC, EC2, EBS)
-│   ├── secrets.tf              # secrets manager resources
-│   └── kubeadm-init.sh         # cluster bootstrap script
+│   ├── main.tf                 # AWS resources (VPC, EC2, EBS)
+│   ├── secrets.tf              # Secrets Manager resources
+│   └── kubeadm-init.sh         # Cluster bootstrap script
 ├── kubernetes/
-│   ├── base/                   # base kustomize manifests
+│   ├── base/                   # Base Kustomize manifests
 │   │   ├── api/
 │   │   ├── frontend/
 │   │   └── redis/
-│   ├── overlays/               # environment-specific configs
+│   ├── overlays/               # Environment-specific configs
 │   │   ├── dev/
 │   │   ├── staging/
 │   │   └── prod/
-│   ├── bootstrap/              # argoCD bootstrap
-│   ├── monitoring/             # prometheus/grafana/loki/fluent bit
+│   ├── bootstrap/              # ArgoCD bootstrap
+│   ├── monitoring/             # Prometheus/Grafana/Loki/Fluent Bit
 │   ├── external-secrets/       # ESO configuration
-│   ├── ingress/                # nginx ingress controller
-│   ├── kyverno/                # policy engine
-│   └── network-policies/       # network isolation rules
+│   ├── ingress/                # Nginx Ingress Controller
+│   ├── kyverno/                # Policy engine
+│   └── network-policies/       # Network isolation rules
 ├── tests/
 │   └── load-testing/           # k6 load test scripts
-├── docs/
-|   ├── architecture.md         # project architecture diagrams
-|   └── probelsm.txt            # issues faced during project
 └── .github/workflows/          # CI/CD pipelines
 
 ---
