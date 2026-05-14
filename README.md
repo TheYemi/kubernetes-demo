@@ -97,7 +97,6 @@ A self-managed 3-node Kubernetes cluster running a microservices application wit
 
 ---
 
-
 ## GitOps & CI/CD
 
 ### GitOps (ArgoCD)
@@ -146,6 +145,9 @@ Code Push → Build & Scan → Tag Image → Update Kustomization → ArgoCD Syn
 │   └── network-policies/       # network isolation rules
 ├── tests/
 │   └── load-testing/           # k6 load test scripts
+├── docs/
+|   ├── architecture.md         # project architecture diagrams
+|   └── probelsm.txt            # issues faced during project
 └── .github/workflows/          # CI/CD pipelines
 
 ---
@@ -242,8 +244,8 @@ Code Push → Build & Scan → Tag Image → Update Kustomization → ArgoCD Syn
 
 ## Documentation
 
-- **Architecture Diagram:** See `docs/architecture.png`
-- **Troubleshooting Guide:** See `problems.txt` (32+ issues documented and resolved)
+- **Architecture Diagram:** See `docs/architecture.md`
+- **Troubleshooting Guide:** See `docs/problems.txt` (30+ issues documented and resolved)
 - **Setup Guide:** See `docs/setup.md`
 
 ---
