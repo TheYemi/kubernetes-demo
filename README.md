@@ -119,6 +119,8 @@ Code Push → Build & Scan → Tag Image → Update Kustomization → ArgoCD Syn
 ---
 
 ## Repository Structure
+
+```
 .
 ├── application/
 │   ├── api/                    # Flask REST API
@@ -146,6 +148,7 @@ Code Push → Build & Scan → Tag Image → Update Kustomization → ArgoCD Syn
 ├── tests/
 │   └── load-testing/           # k6 load test scripts
 └── .github/workflows/          # CI/CD pipelines
+```
 
 ---
 
