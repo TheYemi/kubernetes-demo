@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: staging
 
 resources:
-- namespace.yaml
 - ../../base/common
 - ../../base/api
 - ../../base/frontend
